@@ -6,7 +6,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var version = "DEV"
+var Version = "DEV"
 
 func newVersionCommand(cli *CLI) *cobra.Command {
 	cmd := &cobra.Command{
@@ -20,6 +20,6 @@ func newVersionCommand(cli *CLI) *cobra.Command {
 }
 
 func runVersion(cli *CLI, cmd *cobra.Command, args []string) error {
-	fmt.Printf("nutactl %s\n", version)
+	fmt.Printf("nutactl %s\n", Version)
 	return nil
 }

@@ -13,6 +13,8 @@ builds:
   ignore:
   - goos: darwin
     goarch: 386
+  ldflags:
+  - -w -X github.com/simonfuhrer/nutactl/cmd.Version={{.Version}}
 archives:
 - name_template: "nutactl-{{ .Version }}-{{ .Os }}-{{ .Arch }}"
   format_overrides:
