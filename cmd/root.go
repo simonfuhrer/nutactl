@@ -32,8 +32,6 @@ func NewRootCommand(cli *CLI) *cobra.Command {
 		newSubnetCommand(cli),
 		newCategoryCommand(cli),
 		newTaskCommand(cli),
-		newAvailabilityZoneCommand(cli),
-		newVirtualNetworkCommand(cli),
 		newVersionCommand(cli),
 		newCompletionCommand(cli),
 	)
