@@ -1,0 +1,29 @@
+project_name: nutactl
+before:
+  hooks:
+    - go mod tidy
+builds:
+- env:
+  - CGO_ENABLED=0
+  - GO111MODULE=on
+  goos:
+  - windows
+  - darwin
+  - linux
+  ignore:
+  - goos: darwin
+    goarch: 386
+archives:
+- name_template: "nutactl-{{ .Version }}-{{ .Os }}-{{ .Arch }}"
+  format_overrides:
+  - goos: windows
+    format: zip
+  files: [a-workaround-to-include-only-the-binary*]
+  wrap_in_directory: false
+checksum:
+  name_template: "nutactl-{{ .Version }}-checksums.sha256"  
+release:
+  prerelease: auto        
+  github:
+    owner: simonfuhrer
+    name: nutactl
