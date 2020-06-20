@@ -2,7 +2,7 @@
 
 ![Release version on tag](https://github.com/simonfuhrer/nutactl/workflows/Release%20version%20on%20tag/badge.svg)
 
-![image info](./doc/logo.png)
+![image info](./assets/images/logo.png)
 
 `nutactl` is a command-line utility for nutanix prism.
 
