@@ -32,7 +32,7 @@ func newImageListCommand(cli *CLI) *cobra.Command {
 		RunE:                  cli.wrap(runImageList),
 	}
 	flags := cmd.Flags()
-	flags.StringP("filter", "f", "", "FIQL filter  (e.g. name==flatcar.*)")
+	flags.StringP("filter", "f", "", "FIQL filter  (e.g. name==flatcar.*, image_type==kDiskImage, image_type==kIsoImage)")
 	addOutputFormatFlags(flags, "table")
 
 	return cmd
