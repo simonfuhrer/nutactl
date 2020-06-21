@@ -6,5 +6,4 @@
 
 `nutactl` is a command-line utility for nutanix prism.
 
-
-[![asciicast](https://asciinema.org/a/341497.png)](https://asciinema.org/a/341497)
+![GIF](./assets/images/terminal.gif)
