@@ -16,6 +16,7 @@ package cmd
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/simonfuhrer/nutactl/cmd/displayers"
 	"github.com/spf13/cobra"
@@ -47,25 +48,23 @@ func runVMList(cli *CLI, cmd *cobra.Command, args []string) error {
 	var list *schema.VMListIntent
 	var err error
 
-	var filtercluster string
+	var finalfilter []string
+	if filter != "" {
+		finalfilter = append(finalfilter, filter)
+	}
 
 	if cluster != "" {
 		clustername, err := cli.Client().Cluster.Get(cli.Context, cluster)
 		if err != nil {
 			return err
 		}
-		filtercluster = fmt.Sprintf("cluster=in=%s", clustername.Metadata.UUID)
+		finalfilter = append(finalfilter, fmt.Sprintf("cluster=in=%s", clustername.Metadata.UUID))
 	}
 
-	if filter != "" || cluster != "" {
-		if filter != "" {
-			filter = fmt.Sprintf("%s;%s", filter, filtercluster)
-		} else {
-			filter = filtercluster
-		}
+	if len(finalfilter) > 0 {
 		list, err = cli.Client().VM.List(
 			cli.Context,
-			&schema.DSMetadata{Length: utils.Int64Ptr(500), Filter: filter},
+			&schema.DSMetadata{Length: utils.Int64Ptr(500), Filter: strings.Join(finalfilter, ";")},
 		)
 		if err != nil {
 			return err
@@ -75,6 +74,7 @@ func runVMList(cli *CLI, cmd *cobra.Command, args []string) error {
 		if err != nil {
 			return err
 		}
+
 	}
 
 	return outputResponse(displayers.VMs{VMListIntent: *list})
