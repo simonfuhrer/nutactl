@@ -55,21 +55,6 @@ func BindAllFlags(cmd *cobra.Command) {
 	_ = viper.BindPFlags(cmd.PersistentFlags())
 }
 
-/* func bindAllFlags(cmd *cobra.Command, v *viper.Viper) {
-	cmd.PersistentFlags().VisitAll(func(f *pflag.Flag) {
-		fmt.Println(f.Name)
-		pp.Println(cmd.PersistentFlags().Lookup(f.Name))
-		if err := v.BindPFlag(f.Name, cmd.PersistentFlags().Lookup(f.Name)); err != nil {
-			panic(err) // Should never happen
-		}
-	})
-	cmd.Flags().VisitAll(func(f *pflag.Flag) {
-		if err := v.BindPFlag(f.Name, cmd.Flags().Lookup(f.Name)); err != nil {
-			panic(err) // Should never happen
-		}
-	})
-} */
-
 func checkErr(err error) error {
 	if err == nil {
 		return nil

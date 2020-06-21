@@ -16,6 +16,7 @@ package cmd
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
@@ -120,7 +121,7 @@ func createUpdateVMHelper(name string, req *schema.VMIntent, cli *CLI) error {
 		if err != nil {
 			return fmt.Errorf("subnet not found %s", subnetIdorName)
 		}
-		if subnet.Spec.ClusterReference.UUID != req.Spec.ClusterReference.UUID {
+		if strings.Compare(subnet.Spec.ClusterReference.UUID, req.Spec.ClusterReference.UUID) > 0 {
 			return fmt.Errorf("subnet not available on provided cluster %s", req.Spec.ClusterReference.UUID)
 		}
 

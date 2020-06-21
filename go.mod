@@ -18,6 +18,7 @@ require (
 	github.com/spf13/pflag v1.0.3
 	github.com/spf13/viper v1.4.0
 	github.com/tecbiz-ch/nutanix-go-sdk v0.1.5
+	golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2
 	k8s.io/client-go v11.0.0+incompatible
 	sigs.k8s.io/yaml v1.2.0
 )
