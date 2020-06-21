@@ -37,7 +37,7 @@ func MarkFlagsRequired(cmd *cobra.Command, names ...string) {
 
 	cmd.InheritedFlags()
 	for _, name := range names {
-		if !viper.IsSet(name) {
+		if !viper.IsSet(name) || viper.GetString(name) == "" {
 			if err := cobra.MarkFlagRequired(cmd.Flags(), name); err != nil {
 				panic(err)
 			}
