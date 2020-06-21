@@ -44,6 +44,7 @@ func NewRootCommand(cli *CLI) *cobra.Command {
 		newClusterCommand(cli),
 		newProjectCommand(cli),
 		newSubnetCommand(cli),
+		newAvailabilityZoneCommand(cli),
 		newCategoryCommand(cli),
 		newTaskCommand(cli),
 		newVersionCommand(cli),

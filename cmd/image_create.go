@@ -20,8 +20,8 @@ import (
 	"os"
 
 	"github.com/pkg/errors"
-	"github.com/simonfuhrer/nutactl/pkg/utils"
 	"github.com/spf13/cobra"
+	"github.com/tecbiz-ch/nutanix-go-sdk/pkg/utils"
 	"github.com/tecbiz-ch/nutanix-go-sdk/schema"
 )
 
