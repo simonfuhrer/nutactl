@@ -66,14 +66,17 @@ func runVMCreate(cli *CLI, cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("both image and vm are missing")
 	}
 
-	vmexists, _ := cli.Client().VM.Get(cli.Context, name)
+	vmexists, err := cli.Client().VM.Get(cli.Context, name)
+	if err != nil {
+		return err
+	}
 	if vmexists != nil {
 		return fmt.Errorf("vm %s already exists with uuid %s", name, vmexists.Metadata.UUID)
 	}
 
 	cluster, err := cli.Client().Cluster.Get(cli.Context, clusterIdorName)
 	if err != nil {
-		return fmt.Errorf("cluster not found %s", clusterIdorName)
+		return err
 	}
 
 	req := &schema.VMIntent{
