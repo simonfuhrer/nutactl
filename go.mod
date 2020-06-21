@@ -16,7 +16,7 @@ require (
 	github.com/spf13/cobra v1.0.0
 	github.com/spf13/pflag v1.0.3
 	github.com/spf13/viper v1.4.0
-	github.com/tecbiz-ch/nutanix-go-sdk v0.1.5
+	github.com/tecbiz-ch/nutanix-go-sdk v0.1.6
 	k8s.io/client-go v11.0.0+incompatible
 	sigs.k8s.io/yaml v1.2.0
 )

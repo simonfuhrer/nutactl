@@ -135,6 +135,8 @@ github.com/stretchr/testify v1.2.2 h1:bSDNvY7ZPG5RlJ8otE/7V6gMiyenm9RtJ7IUVIAoJ1
 github.com/stretchr/testify v1.2.2/go.mod h1:a8OnRcib4nhh0OaRAV+Yts87kKdq0PP7pXfy6kDkUVs=
 github.com/tecbiz-ch/nutanix-go-sdk v0.1.5 h1:x6dg9M0TgE16f2TVjF9/x1Mqp/dgvYXcg4wHZnK0CrM=
 github.com/tecbiz-ch/nutanix-go-sdk v0.1.5/go.mod h1:TncIArVgpOzHXAJqABB0HL4n4YfKKvQFMKF/y2FBZ4o=
+github.com/tecbiz-ch/nutanix-go-sdk v0.1.6 h1:H4poi7TUNlZnnA/UT+DAACFSLp7SYb+Kbrtzr8tn+U8=
+github.com/tecbiz-ch/nutanix-go-sdk v0.1.6/go.mod h1:TncIArVgpOzHXAJqABB0HL4n4YfKKvQFMKF/y2FBZ4o=
 github.com/tmc/grpc-websocket-proxy v0.0.0-20190109142713-0ad062ec5ee5/go.mod h1:ncp9v5uamzpCO7NfCPTXjqaC+bZgJeR0sMTm6dMHP7U=
 github.com/ugorji/go v1.1.4/go.mod h1:uQMGLiO92mf5W77hV/PUCpI3pbzQx3CRekS0kk+RGrc=
 github.com/ugorji/go/codec v0.0.0-20181204163529-d75b2dcb6bc8/go.mod h1:VFNgLljTbGfSG7qAOspJ7OScBnGdDN/yBr0sguwnwf0=
