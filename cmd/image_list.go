@@ -16,7 +16,10 @@ package cmd
 
 import (
 	"github.com/simonfuhrer/nutactl/cmd/displayers"
+	"github.com/simonfuhrer/nutactl/pkg/utils"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+	"github.com/tecbiz-ch/nutanix-go-sdk/schema"
 )
 
 func newImageListCommand(cli *CLI) *cobra.Command {
@@ -29,14 +32,31 @@ func newImageListCommand(cli *CLI) *cobra.Command {
 		RunE:                  cli.wrap(runImageList),
 	}
 	flags := cmd.Flags()
+	flags.StringP("filter", "f", "", "FIQL filter  (e.g. name==flatcar.*, image_type==kDiskImage, image_type==kIsoImage)")
 	addOutputFormatFlags(flags, "table")
+
 	return cmd
 }
 
 func runImageList(cli *CLI, cmd *cobra.Command, args []string) error {
+	filter := viper.GetString("filter")
+
+	if filter != "" {
+		listfiltered, err := cli.Client().Image.List(
+			cli.Context,
+			&schema.DSMetadata{Length: utils.Int64Ptr(500), Filter: filter},
+		)
+
+		if err != nil {
+			return err
+		}
+		return outputResponse(displayers.Images{ImageListIntent: *listfiltered})
+	}
+
 	list, err := cli.Client().Image.All(cli.Context)
 	if err != nil {
 		return err
 	}
+
 	return outputResponse(displayers.Images{ImageListIntent: *list})
 }

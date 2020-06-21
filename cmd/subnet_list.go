@@ -16,7 +16,10 @@ package cmd
 
 import (
 	"github.com/simonfuhrer/nutactl/cmd/displayers"
+	"github.com/simonfuhrer/nutactl/pkg/utils"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+	"github.com/tecbiz-ch/nutanix-go-sdk/schema"
 )
 
 func newSubnetListCommand(cli *CLI) *cobra.Command {
@@ -28,11 +31,27 @@ func newSubnetListCommand(cli *CLI) *cobra.Command {
 		RunE:                  cli.wrap(runSubnetList),
 	}
 	flags := cmd.Flags()
+	flags.StringP("filter", "f", "", "FIQL filter  (e.g. vlan_id==2711;cluster_name==mycluster)")
+
 	addOutputFormatFlags(flags, "table")
 	return cmd
 }
 
 func runSubnetList(cli *CLI, cmd *cobra.Command, args []string) error {
+	filter := viper.GetString("filter")
+
+	if filter != "" {
+		listfiltered, err := cli.Client().Subnet.List(
+			cli.Context,
+			&schema.DSMetadata{Length: utils.Int64Ptr(500), Filter: filter},
+		)
+
+		if err != nil {
+			return err
+		}
+		return outputResponse(displayers.Subnets{SubnetListIntent: *listfiltered})
+	}
+
 	list, err := cli.Client().Subnet.All(cli.Context)
 	if err != nil {
 		return err
