@@ -43,6 +43,14 @@ func newVMCommand(cli *CLI) *cobra.Command {
 		newVMPowerStateResetCommand(cli),
 		newVMPowerStateRebootCommand(cli),
 		newVMPowerStateShutdownCommand(cli),
+		newVMRecoveryPointListCommand(cli),
+		newVMRecoveryPointCreateCommand(cli),
+		newVMRecoveryPointDeleteCommand(cli),
+		newVMSnapshotListCommand(cli),
+		newVMSnapshotDescribeCommand(cli),
+		newVMSnapshotRestoreCommand(cli),
+		newVMSnapshotCreateCommand(cli),
+		newVMSnapshotDeleteCommand(cli),
 	)
 	cmd.Flags().SortFlags = false
 	cmd.PersistentFlags().SortFlags = false

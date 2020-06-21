@@ -16,9 +16,10 @@ package cmd
 
 import (
 	"github.com/simonfuhrer/nutactl/cmd/displayers"
-	"github.com/simonfuhrer/nutactl/pkg/utils"
+
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"github.com/tecbiz-ch/nutanix-go-sdk/pkg/utils"
 	"github.com/tecbiz-ch/nutanix-go-sdk/schema"
 )
 
