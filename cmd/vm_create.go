@@ -18,6 +18,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"io/ioutil"
+	"strings"
 
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
@@ -67,7 +68,7 @@ func runVMCreate(cli *CLI, cmd *cobra.Command, args []string) error {
 	}
 
 	vmexists, err := cli.Client().VM.Get(cli.Context, name)
-	if err != nil {
+	if err != nil && !strings.Contains(err.Error(), "not found") {
 		return err
 	}
 	if vmexists != nil {
