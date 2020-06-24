@@ -47,13 +47,15 @@ func NewRootCommand(cli *CLI) *cobra.Command {
 		newAvailabilityZoneCommand(cli),
 		newCategoryCommand(cli),
 		newTaskCommand(cli),
+		newForemanCommand(cli),
 		newVersionCommand(cli),
 		newCompletionCommand(cli),
 	)
 
 	rootCmd.Flags().SortFlags = false
 	flags := rootCmd.PersistentFlags()
-	flags.StringP("api-url", "a", "", "Nutanix PC Api URL [NUTACTL_API_URL]")
+	flags.StringP("api-url", "a", "", "Nutanix PC API URL [NUTACTL_API_URL]")
+	flags.StringP("foreman-api-url", "f", "", "Foreman API URL [NUTACTL_FOREMAN_API_URL]")
 	flags.StringP("username", "u", "", "Nutanix username [NUTACTL_USERNAME]")
 	flags.StringP("password", "p", "", "Nutanix password [NUTACTL_PASSWORD]")
 	flags.BoolP("insecure", "", false, "Accept insecure TLS certificates")
@@ -62,7 +64,7 @@ func NewRootCommand(cli *CLI) *cobra.Command {
 	flags.BoolP("log-json", "", false, "log as json")
 
 	BindAllFlags(rootCmd)
-	MarkFlagsRequired(rootCmd, "api-url", "username", "password")
+	MarkFlagsRequired(rootCmd, "api-url", "username", "password", "foreman-api-url")
 
 	return rootCmd
 }

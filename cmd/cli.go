@@ -17,6 +17,7 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"net/url"
 	"strings"
 	"time"
 
@@ -27,6 +28,8 @@ import (
 	"github.com/spf13/viper"
 
 	nutanix "github.com/tecbiz-ch/nutanix-go-sdk"
+
+	foreman "github.com/simonfuhrer/nutactl/pkg/foreman"
 )
 
 // PollIntervalinSeconds ..
@@ -41,6 +44,7 @@ type CLI struct {
 	Context             context.Context
 	RootCommand         *cobra.Command
 	client              *nutanix.Client
+	foremanclient       *foreman.Client
 	millisecondsPerPoll time.Duration
 	clusters            map[string]string
 }
@@ -90,6 +94,30 @@ func (c *CLI) Client() *nutanix.Client {
 		c.client = nutanix.NewClient(opts...)
 	}
 	return c.client
+}
+
+//ForemanClient cli ...
+func (c *CLI) ForemanClient() *foreman.Client {
+	if c.foremanclient == nil {
+
+		configCreds := foreman.ClientCredentials{
+			Username: viper.GetString("username"),
+			Password: viper.GetString("password"),
+		}
+		foremanAPIURL := viper.GetString("foreman-api-url")
+		myurl, _ := url.Parse(foremanAPIURL)
+		server := foreman.Server{
+			URL: *myurl,
+		}
+
+		foreman := foreman.NewClient(server, configCreds, foreman.ClientConfig{
+			TLSInsecureEnabled: viper.GetBool("insecure"),
+		})
+
+		logrus.Debugf("creating Foreman Client")
+		c.foremanclient = foreman
+	}
+	return c.foremanclient
 }
 
 // InitAllClusters ...
