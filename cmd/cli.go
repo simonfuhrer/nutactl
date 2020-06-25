@@ -100,9 +100,18 @@ func (c *CLI) Client() *nutanix.Client {
 func (c *CLI) ForemanClient() *foreman.Client {
 	if c.foremanclient == nil {
 
+		username := viper.GetString("foreman-username")
+		password := viper.GetString("foreman-password")
+
+		if len(username) == 0 {
+			username = viper.GetString("username")
+		}
+		if len(password) == 0 {
+			username = viper.GetString("password")
+		}
 		configCreds := foreman.ClientCredentials{
-			Username: viper.GetString("username"),
-			Password: viper.GetString("password"),
+			Username: username,
+			Password: password,
 		}
 		foremanAPIURL := viper.GetString("foreman-api-url")
 		myurl, _ := url.Parse(foremanAPIURL)
