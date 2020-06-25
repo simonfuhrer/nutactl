@@ -13,7 +13,6 @@ import (
 	"strings"
 
 	validator "github.com/go-playground/validator/v10"
-	"github.com/k0kubun/pp"
 )
 
 const (
@@ -114,11 +113,10 @@ func (client *Client) NewRequest(ctx context.Context, method string, endpoint st
 	if err != nil {
 		return nil, err
 	}
-	pp.Println(string(buf))
 
-	var prettyJSON bytes.Buffer
-	_ = json.Indent(&prettyJSON, buf, "", "\t")
-	fmt.Println(string(prettyJSON.Bytes()))
+	//var prettyJSON bytes.Buffer
+	//_ = json.Indent(&prettyJSON, buf, "", "\t")
+	//fmt.Println(string(prettyJSON.Bytes()))
 	contentBody = bytes.NewReader(buf)
 
 	// Build the URL for the request
