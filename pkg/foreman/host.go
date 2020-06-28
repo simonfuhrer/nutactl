@@ -268,8 +268,16 @@ type HostTemplate struct {
 	Template string `json:"template,omitempty"`
 }
 
-func (c *Client) GetHostUserDataTemplate(ctx context.Context, host *Host) (*HostTemplate, error) {
+func (c *Client) getHostTemplate(ctx context.Context, host *Host, templateType string) (*HostTemplate, error) {
 	response := new(HostTemplate)
-	err := c.requestHelper(ctx, fmt.Sprintf("/%s/%d/template/user_data", HostEndpointPrefix, host.ID), http.MethodGet, nil, response)
+	err := c.requestHelper(ctx, fmt.Sprintf("/%s/%d/template/", HostEndpointPrefix, host.ID, templateType), http.MethodGet, nil, response)
 	return response, err
+}
+
+func (c *Client) GetHostUserDataTemplate(ctx context.Context, host *Host) (*HostTemplate, error) {
+	return c.getHostTemplate(ctx, host, "user_data")
+}
+
+func (c *Client) GetHostCloudInitTemplate(ctx context.Context, host *Host) (*HostTemplate, error) {
+	return c.getHostTemplate(ctx, host, "cloud-init")
 }
