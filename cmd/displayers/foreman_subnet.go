@@ -50,6 +50,7 @@ func (o ForemanSubnets) header() []string {
 		"Type",
 		"IPAM",
 		"VLANID",
+		"UpdatedAt",
 		"CreatedAt",
 	}
 }
@@ -63,6 +64,7 @@ func (o ForemanSubnets) TableData(w io.Writer) error {
 			subnet.NetworkType,
 			subnet.Ipam,
 			fmt.Sprintf("%v", subnet.Vlanid),
+			subnet.UpdatedAt,
 			subnet.CreatedAt,
 		}
 	}

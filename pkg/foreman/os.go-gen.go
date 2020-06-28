@@ -2,6 +2,8 @@
 // Any changes will be lost if this file is regenerated.
 // see https://github.com/cheekybits/genny
 
+// maybe someone find a better solution. For now this is more than a workaround.
+//
 package foreman
 
 import (
@@ -12,7 +14,7 @@ import (
 	"strings"
 )
 
-var OperatingSystemEndpointPrefix = fmt.Sprintf("%ss", strings.ToLower("OperatingSystem"))
+var OperatingSystemEndpointPrefix = fmt.Sprintf("%s", strings.ToLower("Operatingsystems"))
 
 type QueryResponseOperatingSystem struct {
 	QueryResponse
@@ -34,12 +36,13 @@ func (c *Client) GetOperatingSystemByID(ctx context.Context, id int) (*Operating
 
 func (c *Client) GetOperatingSystemByName(ctx context.Context, name string) (*OperatingSystem, error) {
 	response := new(QueryResponseOperatingSystem)
-	err := c.requestSearchHelper(ctx, fmt.Sprintf("/%s", OperatingSystemEndpointPrefix), http.MethodGet, "name", name, nil, response)
+	filter := fmt.Sprintf("%s=\"%s\"", strings.ToLower("Title"), name)
+	err := c.requestSearchHelper(ctx, fmt.Sprintf("/%s", OperatingSystemEndpointPrefix), http.MethodGet, filter, nil, response)
 	if err != nil {
 		return nil, err
 	}
 	if len(response.Results) == 0 {
-		return nil, fmt.Errorf("OperatingSystem not found: %s", name)
+		return nil, fmt.Errorf("OperatingSystem not found")
 
 	}
 	return &response.Results[0], err
@@ -48,6 +51,12 @@ func (c *Client) GetOperatingSystemByName(ctx context.Context, name string) (*Op
 func (c *Client) ListOperatingSystem(ctx context.Context) (*QueryResponseOperatingSystem, error) {
 	response := new(QueryResponseOperatingSystem)
 	err := c.requestHelper(ctx, fmt.Sprintf("/%s", OperatingSystemEndpointPrefix), http.MethodGet, nil, response)
+	return response, err
+}
+
+func (c *Client) SearchOperatingSystem(ctx context.Context, filter string) (*QueryResponseOperatingSystem, error) {
+	response := new(QueryResponseOperatingSystem)
+	err := c.requestSearchHelper(ctx, fmt.Sprintf("/%s", OperatingSystemEndpointPrefix), http.MethodGet, filter, nil, response)
 	return response, err
 }
 

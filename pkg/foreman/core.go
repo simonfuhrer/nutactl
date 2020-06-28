@@ -4,10 +4,6 @@ import (
 	"strconv"
 )
 
-// ----------------------------------------------------------------------------
-// Foreman Object Model
-// ----------------------------------------------------------------------------
-
 // Base Foreman API object in the Foreman object model.  Every API entity
 // has the following attributes:
 type ForemanObject struct {

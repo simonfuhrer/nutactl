@@ -1,6 +1,6 @@
 package foreman
 
-//go:generate genny -in=template.go -out=$GOFILE-gen.go gen "Type=Subnet"
+//go:generate genny -in=template.go -out=$GOFILE-gen.go gen "Type=Subnet Value=Name Path=subnets"
 
 type Subnet struct {
 	ForemanObject

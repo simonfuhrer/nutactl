@@ -1,3 +1,5 @@
+// maybe someone find a better solution. For now this is more than a workaround.
+//
 package foreman
 
 import (
@@ -12,7 +14,11 @@ import (
 
 type Type generic.Type
 
-var TypeEndpointPrefix = fmt.Sprintf("%ss", strings.ToLower("Type"))
+type Value generic.Number
+
+type Path generic.Number
+
+var TypeEndpointPrefix = fmt.Sprintf("%s", strings.ToLower("Path"))
 
 type QueryResponseType struct {
 	QueryResponse
@@ -34,12 +40,13 @@ func (c *Client) GetTypeByID(ctx context.Context, id int) (*Type, error) {
 
 func (c *Client) GetTypeByName(ctx context.Context, name string) (*Type, error) {
 	response := new(QueryResponseType)
-	err := c.requestSearchHelper(ctx, fmt.Sprintf("/%s", TypeEndpointPrefix), http.MethodGet, "name", name, nil, response)
+	filter := fmt.Sprintf("%s=\"%s\"", strings.ToLower("Value"), name)
+	err := c.requestSearchHelper(ctx, fmt.Sprintf("/%s", TypeEndpointPrefix), http.MethodGet, filter, nil, response)
 	if err != nil {
 		return nil, err
 	}
 	if len(response.Results) == 0 {
-		return nil, fmt.Errorf("Type not found: %s", name)
+		return nil, fmt.Errorf("Type not found")
 
 	}
 	return &response.Results[0], err
@@ -48,6 +55,12 @@ func (c *Client) GetTypeByName(ctx context.Context, name string) (*Type, error) 
 func (c *Client) ListType(ctx context.Context) (*QueryResponseType, error) {
 	response := new(QueryResponseType)
 	err := c.requestHelper(ctx, fmt.Sprintf("/%s", TypeEndpointPrefix), http.MethodGet, nil, response)
+	return response, err
+}
+
+func (c *Client) SearchType(ctx context.Context, filter string) (*QueryResponseType, error) {
+	response := new(QueryResponseType)
+	err := c.requestSearchHelper(ctx, fmt.Sprintf("/%s", TypeEndpointPrefix), http.MethodGet, filter, nil, response)
 	return response, err
 }
 

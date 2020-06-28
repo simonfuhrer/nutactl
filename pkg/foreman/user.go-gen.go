@@ -2,6 +2,8 @@
 // Any changes will be lost if this file is regenerated.
 // see https://github.com/cheekybits/genny
 
+// maybe someone find a better solution. For now this is more than a workaround.
+//
 package foreman
 
 import (
@@ -12,7 +14,7 @@ import (
 	"strings"
 )
 
-var UserEndpointPrefix = fmt.Sprintf("%ss", strings.ToLower("User"))
+var UserEndpointPrefix = fmt.Sprintf("%s", strings.ToLower("Users"))
 
 type QueryResponseUser struct {
 	QueryResponse
@@ -34,12 +36,13 @@ func (c *Client) GetUserByID(ctx context.Context, id int) (*User, error) {
 
 func (c *Client) GetUserByName(ctx context.Context, name string) (*User, error) {
 	response := new(QueryResponseUser)
-	err := c.requestSearchHelper(ctx, fmt.Sprintf("/%s", UserEndpointPrefix), http.MethodGet, "name", name, nil, response)
+	filter := fmt.Sprintf("%s=\"%s\"", strings.ToLower("Name"), name)
+	err := c.requestSearchHelper(ctx, fmt.Sprintf("/%s", UserEndpointPrefix), http.MethodGet, filter, nil, response)
 	if err != nil {
 		return nil, err
 	}
 	if len(response.Results) == 0 {
-		return nil, fmt.Errorf("User not found: %s", name)
+		return nil, fmt.Errorf("User not found")
 
 	}
 	return &response.Results[0], err
@@ -48,6 +51,12 @@ func (c *Client) GetUserByName(ctx context.Context, name string) (*User, error) 
 func (c *Client) ListUser(ctx context.Context) (*QueryResponseUser, error) {
 	response := new(QueryResponseUser)
 	err := c.requestHelper(ctx, fmt.Sprintf("/%s", UserEndpointPrefix), http.MethodGet, nil, response)
+	return response, err
+}
+
+func (c *Client) SearchUser(ctx context.Context, filter string) (*QueryResponseUser, error) {
+	response := new(QueryResponseUser)
+	err := c.requestSearchHelper(ctx, fmt.Sprintf("/%s", UserEndpointPrefix), http.MethodGet, filter, nil, response)
 	return response, err
 }
 

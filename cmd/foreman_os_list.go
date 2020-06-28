@@ -19,6 +19,7 @@ import (
 
 	"github.com/simonfuhrer/nutactl/cmd/displayers"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 func newForemanOSListCommand(cli *CLI) *cobra.Command {
@@ -31,14 +32,25 @@ func newForemanOSListCommand(cli *CLI) *cobra.Command {
 		RunE:                  cli.wrap(runForemanOSList),
 	}
 	flags := cmd.Flags()
+	flags.StringP("filter", "f", "", "Foreman search filter (e.g. os ~ windows)")
+
 	addOutputFormatFlags(flags, "table")
 
 	return cmd
 }
 
 func runForemanOSList(cli *CLI, cmd *cobra.Command, args []string) error {
-	lists, err := cli.ForemanClient().ListOperatingSystem(cli.Context)
+	filter := viper.GetString("filter")
 
+	if filter != "" {
+		osList, err := cli.ForemanClient().SearchOperatingSystem(cli.Context, filter)
+		if err != nil {
+			return err
+		}
+		return outputResponse(displayers.ForemanOperatingSystems{QueryResponseOperatingSystem: *osList})
+	}
+
+	lists, err := cli.ForemanClient().ListOperatingSystem(cli.Context)
 	if err != nil {
 		log.Fatalln(err.Error())
 	}

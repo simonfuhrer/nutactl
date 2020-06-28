@@ -15,8 +15,6 @@
 package cmd
 
 import (
-	"log"
-
 	"github.com/simonfuhrer/nutactl/cmd/displayers"
 	"github.com/spf13/cobra"
 )
@@ -38,9 +36,8 @@ func newForemanHostgroupListCommand(cli *CLI) *cobra.Command {
 
 func runForemanHostgroupList(cli *CLI, cmd *cobra.Command, args []string) error {
 	hostgroups, err := cli.ForemanClient().ListHostgroup(cli.Context)
-
 	if err != nil {
-		log.Fatalln(err.Error())
+		return err
 	}
 
 	return outputResponse(displayers.ForemanHostgroups{QueryResponseHostgroup: *hostgroups})

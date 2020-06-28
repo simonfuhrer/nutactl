@@ -46,6 +46,7 @@ func (o ForemanEnvironments) header() []string {
 	return []string{
 		"ID",
 		"Name",
+		"UpdatedAt",
 		"CreatedAt",
 	}
 }
@@ -55,6 +56,7 @@ func (o ForemanEnvironments) TableData(w io.Writer) error {
 		data[i] = []string{
 			fmt.Sprintf("%v", env.ID),
 			env.Name,
+			env.UpdatedAt,
 			env.CreatedAt,
 		}
 	}

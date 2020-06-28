@@ -46,6 +46,7 @@ func (o ForemanDomains) header() []string {
 	return []string{
 		"ID",
 		"Name",
+		"UpdatedAt",
 		"CreatedAt",
 	}
 }
@@ -55,6 +56,7 @@ func (o ForemanDomains) TableData(w io.Writer) error {
 		data[i] = []string{
 			fmt.Sprintf("%v", domain.ID),
 			domain.Name,
+			domain.UpdatedAt,
 			domain.CreatedAt,
 		}
 	}

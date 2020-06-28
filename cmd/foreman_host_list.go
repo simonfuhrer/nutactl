@@ -15,10 +15,10 @@
 package cmd
 
 import (
-	"log"
-
 	"github.com/simonfuhrer/nutactl/cmd/displayers"
+	"github.com/simonfuhrer/nutactl/pkg/foreman"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 func newForemanHostListCommand(cli *CLI) *cobra.Command {
@@ -31,16 +31,27 @@ func newForemanHostListCommand(cli *CLI) *cobra.Command {
 		RunE:                  cli.wrap(runForemanHostList),
 	}
 	flags := cmd.Flags()
+	flags.StringP("filter", "f", "", "Foreman search filter (e.g. os ~ windows and environment == test_win)")
 	addOutputFormatFlags(flags, "table")
 
 	return cmd
 }
 
 func runForemanHostList(cli *CLI, cmd *cobra.Command, args []string) error {
-	hosts, err := cli.ForemanClient().ListHost(cli.Context)
+	filter := viper.GetString("filter")
+	var hosts *foreman.QueryResponseHost
+	var err error
+	if filter != "" {
+		hosts, err = cli.ForemanClient().SearchHost(cli.Context, filter)
+		if err != nil {
+			return err
+		}
+		return outputResponse(displayers.ForemanHosts{QueryResponseHost: *hosts})
+	}
 
+	hosts, err = cli.ForemanClient().ListHost(cli.Context)
 	if err != nil {
-		log.Fatalln(err.Error())
+		return err
 	}
 
 	return outputResponse(displayers.ForemanHosts{QueryResponseHost: *hosts})

@@ -48,6 +48,7 @@ func (o ForemanHostgroups) header() []string {
 		"Title",
 		"Name",
 		"Environment",
+		"UpdatedAt",
 		"CreatedAt",
 	}
 }
@@ -59,6 +60,7 @@ func (o ForemanHostgroups) TableData(w io.Writer) error {
 			fmt.Sprintf("%v", hostgroup.Title),
 			fmt.Sprintf("%v", hostgroup.Name),
 			fmt.Sprintf("%v", hostgroup.EnvironmentName),
+			hostgroup.UpdatedAt,
 			fmt.Sprintf("%v", hostgroup.CreatedAt),
 		}
 	}

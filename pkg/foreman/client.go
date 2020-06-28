@@ -145,13 +145,13 @@ func (client *Client) NewRequest(ctx context.Context, method string, endpoint st
 	return req.WithContext(ctx), nil
 }
 
-func (client *Client) requestSearchHelper(ctx context.Context, path, method, key, name string, request interface{}, output interface{}) error {
+func (client *Client) requestSearchHelper(ctx context.Context, path, method, filter string, request interface{}, output interface{}) error {
 	req, err := client.NewRequest(ctx, method, path, request)
 	if err != nil {
 		return err
 	}
 	reqQuery := req.URL.Query()
-	reqQuery.Add("search", fmt.Sprintf("%s=\"%s\"", key, name))
+	reqQuery.Add("search", filter)
 
 	req.URL.RawQuery = reqQuery.Encode()
 	err = client.Do(req, &output)

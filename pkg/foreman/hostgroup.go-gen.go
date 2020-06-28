@@ -2,6 +2,8 @@
 // Any changes will be lost if this file is regenerated.
 // see https://github.com/cheekybits/genny
 
+// maybe someone find a better solution. For now this is more than a workaround.
+//
 package foreman
 
 import (
@@ -12,7 +14,7 @@ import (
 	"strings"
 )
 
-var HostgroupEndpointPrefix = fmt.Sprintf("%ss", strings.ToLower("Hostgroup"))
+var HostgroupEndpointPrefix = fmt.Sprintf("%s", strings.ToLower("Hostgroups"))
 
 type QueryResponseHostgroup struct {
 	QueryResponse
@@ -34,12 +36,13 @@ func (c *Client) GetHostgroupByID(ctx context.Context, id int) (*Hostgroup, erro
 
 func (c *Client) GetHostgroupByName(ctx context.Context, name string) (*Hostgroup, error) {
 	response := new(QueryResponseHostgroup)
-	err := c.requestSearchHelper(ctx, fmt.Sprintf("/%s", HostgroupEndpointPrefix), http.MethodGet, "name", name, nil, response)
+	filter := fmt.Sprintf("%s=\"%s\"", strings.ToLower("Name"), name)
+	err := c.requestSearchHelper(ctx, fmt.Sprintf("/%s", HostgroupEndpointPrefix), http.MethodGet, filter, nil, response)
 	if err != nil {
 		return nil, err
 	}
 	if len(response.Results) == 0 {
-		return nil, fmt.Errorf("Hostgroup not found: %s", name)
+		return nil, fmt.Errorf("Hostgroup not found")
 
 	}
 	return &response.Results[0], err
@@ -48,6 +51,12 @@ func (c *Client) GetHostgroupByName(ctx context.Context, name string) (*Hostgrou
 func (c *Client) ListHostgroup(ctx context.Context) (*QueryResponseHostgroup, error) {
 	response := new(QueryResponseHostgroup)
 	err := c.requestHelper(ctx, fmt.Sprintf("/%s", HostgroupEndpointPrefix), http.MethodGet, nil, response)
+	return response, err
+}
+
+func (c *Client) SearchHostgroup(ctx context.Context, filter string) (*QueryResponseHostgroup, error) {
+	response := new(QueryResponseHostgroup)
+	err := c.requestSearchHelper(ctx, fmt.Sprintf("/%s", HostgroupEndpointPrefix), http.MethodGet, filter, nil, response)
 	return response, err
 }
 

@@ -1,6 +1,12 @@
 package foreman
 
-//go:generate genny -in=template.go -out=$GOFILE-gen.go gen "Type=Host"
+import (
+	"context"
+	"fmt"
+	"net/http"
+)
+
+//go:generate genny -in=template.go -out=$GOFILE-gen.go gen "Type=Host Value=Name Path=hosts"
 
 // Structures used to hold the returned host value
 type Host struct {
@@ -54,8 +60,6 @@ type Host struct {
 	CertName                 string            `json:"certname,omitempty"`
 	ImageID                  int               `json:"image_id,omitempty"`
 	ImageName                string            `json:"image_name,omitempty"`
-	CreatedAt                string            `json:"created_at,omitempty"`
-	UpdatedAt                string            `json:"updated_at,omitempty"`
 	LastCompile              interface{}       `json:"last_compile,omitempty"`
 	GlobalStatus             int               `json:"global_status,omitempty"`
 	GlobalStatusLabel        string            `json:"global_status_label,omitempty"`
@@ -157,38 +161,57 @@ type HostRequest struct {
 
 type NewHostData struct {
 	ForemanObject
-	EnvironmentID            string                 `json:"environment_id,omitempty"`
-	IP                       string                 `json:"ip,omitempty"`
-	Mac                      string                 `json:"mac" validate:"required"`
-	ArchitectureID           int                    `json:"architecture_id,omitempty"`
-	DomainID                 int                    `json:"domain_id" validate:"required"`
-	RealmID                  int                    `json:"realm_id,omitempty"`
-	PuppetProxyID            int                    `json:"puppet_proxy_id,omitempty"`
-	PuppetCAProxyID          int                    `json:"puppet_ca_proxy_id,omitempty"`
-	PuppeClaassIDs           []interface{}          `json:"puppet_class_ids,omitempty"`
-	ConfigGroupIDs           []interface{}          `json:"config_group_ids,omitempty"`
-	OperatingsystemID        int                    `json:"operatingsystem_id,omitempty"`
-	MediumID                 int                    `json:"medium_id,omitempty"`
-	PXELoader                string                 `json:"pxe_loader,omitempty"`
-	PtableID                 int                    `json:"ptable_id,omitempty"`
-	SubnetID                 int                    `json:"subnet_id,omitempty"`
-	ComputeResourceID        int                    `json:"compute_resource_id,omitempty"`
-	RootPass                 string                 `json:"root_pass,omitempty"`
-	ModelID                  int                    `json:"model_id,omitempty"`
-	HostgroupID              int                    `json:"hostgroup_id,omitempty"`
-	OwnerID                  int                    `json:"owner_id,omitempty"`
-	OwnerType                string                 `json:"owner_type,omitempty"`
-	ImageID                  int                    `json:"image_id,omitempty"`
-	HostParametersAttributes []ParametersAttributes `json:"host_parameters_attributes,omitempty"`
-	Build                    bool                   `json:"build,omitempty"`
-	Enabled                  bool                   `json:"enabled,omitempty"`
-	ProvisionMethod          string                 `json:"provision_method,omitempty"`
-	Managed                  bool                   `json:"managed,omitempty"`
-	ProgressReportID         string                 `json:"progress_report_id,omitempty"`
-	Comment                  string                 `json:"comment,omitempty"`
-	Capabilities             string                 `json:"capabilities,omitempty"`
-	ComputeProfileID         int                    `json:"compute_profile_id,omitempty"`
-	InterfacesAttributes     *InterfacesAttributes  `json:"interfaces_attributes,omitempty"`
+	EnvironmentID            int                       `json:"environment_id,omitempty"`
+	IP                       string                    `json:"ip,omitempty"`
+	Mac                      string                    `json:"mac" validate:"required"`
+	ArchitectureID           int                       `json:"architecture_id,omitempty"`
+	DomainID                 int                       `json:"domain_id" validate:"required"`
+	RealmID                  int                       `json:"realm_id,omitempty"`
+	PuppetProxyID            int                       `json:"puppet_proxy_id,omitempty"`
+	PuppetCAProxyID          int                       `json:"puppet_ca_proxy_id,omitempty"`
+	PuppeClaassIDs           []interface{}             `json:"puppet_class_ids,omitempty"`
+	ConfigGroupIDs           []interface{}             `json:"config_group_ids,omitempty"`
+	OperatingsystemID        int                       `json:"operatingsystem_id,omitempty"`
+	MediumID                 int                       `json:"medium_id,omitempty"`
+	PXELoader                string                    `json:"pxe_loader,omitempty"`
+	SubnetID                 int                       `json:"subnet_id,omitempty"`
+	ComputeResourceID        int                       `json:"compute_resource_id,omitempty"`
+	RootPass                 string                    `json:"root_pass,omitempty"`
+	ModelID                  int                       `json:"model_id,omitempty"`
+	HostgroupID              int                       `json:"hostgroup_id,omitempty"`
+	OwnerID                  int                       `json:"owner_id,omitempty"`
+	OwnerType                string                    `json:"owner_type,omitempty"`
+	ImageID                  int                       `json:"image_id,omitempty"`
+	HostParametersAttributes []ParametersAttributes    `json:"host_parameters_attributes,omitempty"`
+	Build                    bool                      `json:"build,omitempty"`
+	Enabled                  bool                      `json:"enabled,omitempty"`
+	ProvisionMethod          string                    `json:"provision_method,omitempty"`
+	Managed                  bool                      `json:"managed,omitempty"`
+	ProgressReportID         string                    `json:"progress_report_id,omitempty"`
+	Comment                  string                    `json:"comment"`
+	Capabilities             string                    `json:"capabilities,omitempty"`
+	ComputeProfileID         int                       `json:"compute_profile_id,omitempty"`
+	PartitionTableID         int                       `json:"ptable_id,omitempty"`
+	InterfacesAttributes     *InterfacesAttributes     `json:"interfaces_attributes,omitempty"`
+	ComputeAttributes        *ComputeAttributesXenHost `json:"compute_attributes,omitempty"`
+}
+
+type ComputeAttributesXenHost struct {
+	MemoryMin string `json:"memory_min,omitempty"`
+	MemoryMax string `json:"memory_max,omitempty"`
+	//fix foreman_xen to be an integer
+	VCPUsMax        string `json:"vcpus_max"`
+	ImageUUID       string `json:"image_id"`
+	ConfigDrive     string `json:"configdrive"`
+	Start           bool   `json:"start"`
+	ISO             string `json:"iso"`
+	HypervisorHost  string `json:"hypervisor_host"`
+	BuiltinTemplate string `json:"builtin_template"`
+	TargetSR        string `json:"target_sr"`
+}
+
+type ComputeAttributesXenNetwork struct {
+	NetworkUUID string `json:"network"`
 }
 
 type ParametersAttributes struct {
@@ -197,45 +220,56 @@ type ParametersAttributes struct {
 }
 
 type InterfacesAttributes struct {
-	Primary           NetInterface `json:"1,omitempty"`
-	Management        NetInterface `json:"2,omitempty"`
-	Storage           NetInterface `json:"3,omitempty"`
-	StorageManagement NetInterface `json:"4,omitempty"`
-	Tenant            NetInterface `json:"5,omitempty"`
-	LBAAS             NetInterface `json:"6,omitempty"`
-	InsideNet         NetInterface `json:"7,omitempty"`
-	GatewayNet        NetInterface `json:"8,omitempty"`
+	Primary           *NetInterface `json:"1,omitempty"`
+	Management        *NetInterface `json:"2,omitempty"`
+	Storage           *NetInterface `json:"3,omitempty"`
+	StorageManagement *NetInterface `json:"4,omitempty"`
+	Tenant            *NetInterface `json:"5,omitempty"`
+	LBAAS             *NetInterface `json:"6,omitempty"`
+	InsideNet         *NetInterface `json:"7,omitempty"`
+	GatewayNet        *NetInterface `json:"8,omitempty"`
 }
 
 type NetInterface struct {
-	Name            string   `json:"name,omitempty"`
-	Primary         bool     `json:"primary,omitempty"`
-	IP              string   `json:"ip,omitempty"`
-	IP6             string   `json:"ip6,omitempty"`
-	Mac             string   `json:"mac,omitempty"`
-	Type            string   `json:"type,omitempty"`
-	SubnetID        int      `json:"subnet_id,omitempty"`
-	Subnet6ID       int      `json:"subnet6_id,omitempty"`
-	DomainID        int      `json:"domain_id,omitempty"`
-	Identifier      string   `json:"identifier,omitempty"`
-	Managed         bool     `json:"managed,omitempty"`
-	Provision       bool     `json:"provision,omitempty"`
-	Username        string   `json:"username,omitempty"`
-	Password        string   `json:"password,omitempty"`
-	Provider        string   `json:"provider,omitempty"`
-	Virtual         bool     `json:"virtual,omitempty"`
-	Tag             string   `json:"tag,omitempty"`
-	Mtu             int      `json:"mtu,omitempty"`
-	AttachedTo      string   `json:"attached_to,omitempty"`
-	Mode            string   `json:"mode,omitempty"`
-	AttachedDevices []string `json:"attached_devices,omitempty"`
-	BondOptions     string   `json:"bond_options,omitempty"`
+	Name              string                       `json:"name,omitempty"`
+	Primary           bool                         `json:"primary,omitempty"`
+	IP                string                       `json:"ip,omitempty"`
+	IP6               string                       `json:"ip6,omitempty"`
+	Mac               string                       `json:"mac,omitempty"`
+	Type              string                       `json:"type,omitempty"`
+	SubnetID          int                          `json:"subnet_id,omitempty"`
+	Subnet6ID         int                          `json:"subnet6_id,omitempty"`
+	DomainID          int                          `json:"domain_id,omitempty"`
+	Identifier        string                       `json:"identifier,omitempty"`
+	Managed           bool                         `json:"managed,omitempty"`
+	Provision         bool                         `json:"provision,omitempty"`
+	Username          string                       `json:"username,omitempty"`
+	Password          string                       `json:"password,omitempty"`
+	Provider          string                       `json:"provider,omitempty"`
+	Virtual           bool                         `json:"virtual,omitempty"`
+	Tag               string                       `json:"tag,omitempty"`
+	Mtu               int                          `json:"mtu,omitempty"`
+	AttachedTo        string                       `json:"attached_to,omitempty"`
+	Mode              string                       `json:"mode,omitempty"`
+	AttachedDevices   []string                     `json:"attached_devices,omitempty"`
+	BondOptions       string                       `json:"bond_options,omitempty"`
+	ComputeAttributes *ComputeAttributesXenNetwork `json:"compute_attributes,omitempty"`
 }
 
 // Structures used to create a new interface
 type InterfacePostData struct {
 	OrganizationID int          `json:"organization_id,omitempty"`
 	LocationID     int          `json:"location_id,omitempty"`
-	HostID         string       `json:"host_id,omitempty"`
+	HostID         int          `json:"host_id,omitempty"`
 	Interface      NetInterface `json:"interface"`
+}
+
+type HostTemplate struct {
+	Template string `json:"template,omitempty"`
+}
+
+func (c *Client) GetHostUserDataTemplate(ctx context.Context, host *Host) (*HostTemplate, error) {
+	response := new(HostTemplate)
+	err := c.requestHelper(ctx, fmt.Sprintf("/%s/%d/template/user_data", HostEndpointPrefix, host.ID), http.MethodGet, nil, response)
+	return response, err
 }

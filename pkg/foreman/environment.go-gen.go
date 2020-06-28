@@ -2,6 +2,8 @@
 // Any changes will be lost if this file is regenerated.
 // see https://github.com/cheekybits/genny
 
+// maybe someone find a better solution. For now this is more than a workaround.
+//
 package foreman
 
 import (
@@ -12,7 +14,7 @@ import (
 	"strings"
 )
 
-var EnvironmentEndpointPrefix = fmt.Sprintf("%ss", strings.ToLower("Environment"))
+var EnvironmentEndpointPrefix = fmt.Sprintf("%s", strings.ToLower("Environments"))
 
 type QueryResponseEnvironment struct {
 	QueryResponse
@@ -34,12 +36,13 @@ func (c *Client) GetEnvironmentByID(ctx context.Context, id int) (*Environment, 
 
 func (c *Client) GetEnvironmentByName(ctx context.Context, name string) (*Environment, error) {
 	response := new(QueryResponseEnvironment)
-	err := c.requestSearchHelper(ctx, fmt.Sprintf("/%s", EnvironmentEndpointPrefix), http.MethodGet, "name", name, nil, response)
+	filter := fmt.Sprintf("%s=\"%s\"", strings.ToLower("Name"), name)
+	err := c.requestSearchHelper(ctx, fmt.Sprintf("/%s", EnvironmentEndpointPrefix), http.MethodGet, filter, nil, response)
 	if err != nil {
 		return nil, err
 	}
 	if len(response.Results) == 0 {
-		return nil, fmt.Errorf("Environment not found: %s", name)
+		return nil, fmt.Errorf("Environment not found")
 
 	}
 	return &response.Results[0], err
@@ -48,6 +51,12 @@ func (c *Client) GetEnvironmentByName(ctx context.Context, name string) (*Enviro
 func (c *Client) ListEnvironment(ctx context.Context) (*QueryResponseEnvironment, error) {
 	response := new(QueryResponseEnvironment)
 	err := c.requestHelper(ctx, fmt.Sprintf("/%s", EnvironmentEndpointPrefix), http.MethodGet, nil, response)
+	return response, err
+}
+
+func (c *Client) SearchEnvironment(ctx context.Context, filter string) (*QueryResponseEnvironment, error) {
+	response := new(QueryResponseEnvironment)
+	err := c.requestSearchHelper(ctx, fmt.Sprintf("/%s", EnvironmentEndpointPrefix), http.MethodGet, filter, nil, response)
 	return response, err
 }
 

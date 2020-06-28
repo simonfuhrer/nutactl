@@ -1,6 +1,6 @@
 package foreman
 
-//go:generate genny -in=template.go -out=$GOFILE-gen.go gen "Type=Hostgroup"
+//go:generate genny -in=template.go -out=$GOFILE-gen.go gen "Type=Hostgroup Value=Name Path=hostgroups"
 
 type Hostgroup struct {
 	// Inherits the base object's attributes

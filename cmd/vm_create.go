@@ -44,7 +44,7 @@ func newVMCreateCommand(cli *CLI) *cobra.Command {
 	flags.Bool("start-after-create", false, "Start VM right after creation")
 	flags.String("user-data", "", "Read user data from specified file")
 	_ = cmd.MarkFlagFilename("user-data")
-	MarkFlagsRequired(cmd, "cluster")
+	markFlagsRequired(cmd, "cluster")
 	addVMFlags(flags)
 
 	return cmd

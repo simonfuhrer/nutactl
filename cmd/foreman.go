@@ -34,6 +34,11 @@ func newForemanCommand(cli *CLI) *cobra.Command {
 		newForemanSubnetCommand(cli),
 		newForemanOSCommand(cli),
 		newForemanEnvironmentCommand(cli),
+		newForemanLocationCommand(cli),
+		newForemanOrganizationCommand(cli),
+		newForemanSmartProxyCommand(cli),
+		newForemanComputeResourceCommand(cli),
+		newForemanComputeProfileCommand(cli),
 	)
 	cmd.Flags().SortFlags = false
 	cmd.PersistentFlags().SortFlags = false

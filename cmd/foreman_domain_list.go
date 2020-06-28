@@ -15,8 +15,6 @@
 package cmd
 
 import (
-	"log"
-
 	"github.com/simonfuhrer/nutactl/cmd/displayers"
 	"github.com/spf13/cobra"
 )
@@ -39,7 +37,7 @@ func newForemanDomainListCommand(cli *CLI) *cobra.Command {
 func runForemanDomainList(cli *CLI, cmd *cobra.Command, args []string) error {
 	domains, err := cli.ForemanClient().ListDomain(cli.Context)
 	if err != nil {
-		log.Fatalln(err.Error())
+		return err
 	}
 
 	return outputResponse(displayers.ForemanDomains{QueryResponseDomain: *domains})

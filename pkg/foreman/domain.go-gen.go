@@ -2,6 +2,8 @@
 // Any changes will be lost if this file is regenerated.
 // see https://github.com/cheekybits/genny
 
+// maybe someone find a better solution. For now this is more than a workaround.
+//
 package foreman
 
 import (
@@ -12,7 +14,7 @@ import (
 	"strings"
 )
 
-var DomainEndpointPrefix = fmt.Sprintf("%ss", strings.ToLower("Domain"))
+var DomainEndpointPrefix = fmt.Sprintf("%s", strings.ToLower("Domains"))
 
 type QueryResponseDomain struct {
 	QueryResponse
@@ -34,12 +36,13 @@ func (c *Client) GetDomainByID(ctx context.Context, id int) (*Domain, error) {
 
 func (c *Client) GetDomainByName(ctx context.Context, name string) (*Domain, error) {
 	response := new(QueryResponseDomain)
-	err := c.requestSearchHelper(ctx, fmt.Sprintf("/%s", DomainEndpointPrefix), http.MethodGet, "name", name, nil, response)
+	filter := fmt.Sprintf("%s=\"%s\"", strings.ToLower("Name"), name)
+	err := c.requestSearchHelper(ctx, fmt.Sprintf("/%s", DomainEndpointPrefix), http.MethodGet, filter, nil, response)
 	if err != nil {
 		return nil, err
 	}
 	if len(response.Results) == 0 {
-		return nil, fmt.Errorf("Domain not found: %s", name)
+		return nil, fmt.Errorf("Domain not found")
 
 	}
 	return &response.Results[0], err
@@ -48,6 +51,12 @@ func (c *Client) GetDomainByName(ctx context.Context, name string) (*Domain, err
 func (c *Client) ListDomain(ctx context.Context) (*QueryResponseDomain, error) {
 	response := new(QueryResponseDomain)
 	err := c.requestHelper(ctx, fmt.Sprintf("/%s", DomainEndpointPrefix), http.MethodGet, nil, response)
+	return response, err
+}
+
+func (c *Client) SearchDomain(ctx context.Context, filter string) (*QueryResponseDomain, error) {
+	response := new(QueryResponseDomain)
+	err := c.requestSearchHelper(ctx, fmt.Sprintf("/%s", DomainEndpointPrefix), http.MethodGet, filter, nil, response)
 	return response, err
 }
 

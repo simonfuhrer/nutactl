@@ -33,7 +33,7 @@ func newVMSnapshotDescribeCommand(cli *CLI) *cobra.Command {
 	flags := cmd.Flags()
 	addOutputFormatFlags(flags, "json")
 	cmd.Flags().StringP("name", "n", "", "Snapshot Name")
-	MarkFlagsRequired(cmd, "name")
+	markFlagsRequired(cmd, "name")
 	return cmd
 }
 

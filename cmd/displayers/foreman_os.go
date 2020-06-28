@@ -49,6 +49,7 @@ func (o ForemanOperatingSystems) header() []string {
 		"Name",
 		"Family",
 		"Release",
+		"UpdatedAt",
 		"CreatedAt",
 	}
 }
@@ -61,6 +62,7 @@ func (o ForemanOperatingSystems) TableData(w io.Writer) error {
 			os.Name,
 			os.Family,
 			os.ReleaseName,
+			os.UpdatedAt,
 			os.CreatedAt,
 		}
 	}

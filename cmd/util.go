@@ -19,7 +19,7 @@ import (
 	"crypto/rand"
 	"fmt"
 	"io"
-	"net"
+	"math/big"
 	"os"
 	"strings"
 
@@ -32,24 +32,52 @@ import (
 	"github.com/spf13/viper"
 )
 
-func GenerateMac() net.HardwareAddr {
-	buf := make([]byte, 6)
-	var mac net.HardwareAddr
+const MAC_ADDRESS_LENGTH = 6
+
+func generateMac() (string, error) {
+	buf := make([]byte, MAC_ADDRESS_LENGTH)
+	var groups []string
 
 	_, err := rand.Read(buf)
 	if err != nil {
+		return "", fmt.Errorf("error generating random bytes: %v", err)
 	}
 
-	// Set the local bit
-	buf[0] |= 2
+	// Locally administered
+	buf[0] |= 0x02
 
-	mac = append(mac, buf[0], buf[1], buf[2], buf[3], buf[4], buf[5])
+	// Unicast
+	buf[0] &= 0xfe
 
-	return mac
+	for _, i := range buf {
+		groups = append(groups, fmt.Sprintf("%02x", i))
+	}
+
+	address := strings.Join(groups, ":")
+
+	return address, nil
+}
+
+func generatePassword(length int) (string, error) {
+	characters := "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%^&*-"
+	result := ""
+	for {
+		if len(result) >= length {
+			return result, nil
+		}
+		num, err := rand.Int(rand.Reader, big.NewInt(int64(127)))
+		if err != nil {
+			return "", err
+		}
+		s := string(num.Int64())
+		if strings.Contains(characters, s) {
+			result += s
+		}
+	}
 }
 
 // MarkFlagsRequired ...
-func MarkFlagsRequired(cmd *cobra.Command, names ...string) {
+func markFlagsRequired(cmd *cobra.Command, names ...string) {
 	// cobra does not merge its local flagset with the persistent flagset
 	// when Flags() is called. By calling InheretedFlags(), we force a merge.
 

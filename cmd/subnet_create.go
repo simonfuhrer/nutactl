@@ -34,7 +34,7 @@ func newSubnetCreateCommand(cli *CLI) *cobra.Command {
 	}
 	flags := cmd.Flags()
 	flags.String("cluster", "", "Cluster (UUID or name)")
-	MarkFlagsRequired(cmd, "cluster")
+	markFlagsRequired(cmd, "cluster")
 	addSubnetFlags(flags)
 
 	return cmd

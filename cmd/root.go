@@ -55,18 +55,18 @@ func NewRootCommand(cli *CLI) *cobra.Command {
 	rootCmd.Flags().SortFlags = false
 	flags := rootCmd.PersistentFlags()
 	flags.StringP("api-url", "a", "", "Nutanix PC API URL [NUTACTL_API_URL]")
+	flags.StringP("username", "u", "", "Nutanix username [NUTACTL_USERNAME]")
+	flags.StringP("password", "p", "", "Nutanix password [NUTACTL_PASSWORD]")
 	flags.String("foreman-api-url", "", "Foreman API URL [NUTACTL_FOREMAN_API_URL]")
 	flags.String("foreman-username", "", "Foreman Username [NUTACTL_FOREMAN_USERNAME]")
 	flags.String("foreman-password", "", "Foreman Password [NUTACTL_FOREMAN_PASSWORD]")
-	flags.StringP("username", "u", "", "Nutanix username [NUTACTL_USERNAME]")
-	flags.StringP("password", "p", "", "Nutanix password [NUTACTL_PASSWORD]")
 	flags.BoolP("insecure", "", false, "Accept insecure TLS certificates")
 	flags.StringVar(&cfgFile, "config", "", "config file (default is $HOME/.nutactl.yaml)")
 	flags.StringP("log-level", "", logrus.InfoLevel.String(), "log level (trace,debug,info,warn/warning,error,fatal,panic)")
 	flags.BoolP("log-json", "", false, "log as json")
 
 	BindAllFlags(rootCmd)
-	MarkFlagsRequired(rootCmd, "api-url", "username", "password", "foreman-api-url")
+	markFlagsRequired(rootCmd, "api-url", "username", "password", "foreman-api-url")
 
 	return rootCmd
 }

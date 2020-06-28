@@ -2,6 +2,8 @@
 // Any changes will be lost if this file is regenerated.
 // see https://github.com/cheekybits/genny
 
+// maybe someone find a better solution. For now this is more than a workaround.
+//
 package foreman
 
 import (
@@ -12,7 +14,7 @@ import (
 	"strings"
 )
 
-var SubnetEndpointPrefix = fmt.Sprintf("%ss", strings.ToLower("Subnet"))
+var SubnetEndpointPrefix = fmt.Sprintf("%s", strings.ToLower("Subnets"))
 
 type QueryResponseSubnet struct {
 	QueryResponse
@@ -34,12 +36,13 @@ func (c *Client) GetSubnetByID(ctx context.Context, id int) (*Subnet, error) {
 
 func (c *Client) GetSubnetByName(ctx context.Context, name string) (*Subnet, error) {
 	response := new(QueryResponseSubnet)
-	err := c.requestSearchHelper(ctx, fmt.Sprintf("/%s", SubnetEndpointPrefix), http.MethodGet, "name", name, nil, response)
+	filter := fmt.Sprintf("%s=\"%s\"", strings.ToLower("Name"), name)
+	err := c.requestSearchHelper(ctx, fmt.Sprintf("/%s", SubnetEndpointPrefix), http.MethodGet, filter, nil, response)
 	if err != nil {
 		return nil, err
 	}
 	if len(response.Results) == 0 {
-		return nil, fmt.Errorf("Subnet not found: %s", name)
+		return nil, fmt.Errorf("Subnet not found")
 
 	}
 	return &response.Results[0], err
@@ -48,6 +51,12 @@ func (c *Client) GetSubnetByName(ctx context.Context, name string) (*Subnet, err
 func (c *Client) ListSubnet(ctx context.Context) (*QueryResponseSubnet, error) {
 	response := new(QueryResponseSubnet)
 	err := c.requestHelper(ctx, fmt.Sprintf("/%s", SubnetEndpointPrefix), http.MethodGet, nil, response)
+	return response, err
+}
+
+func (c *Client) SearchSubnet(ctx context.Context, filter string) (*QueryResponseSubnet, error) {
+	response := new(QueryResponseSubnet)
+	err := c.requestSearchHelper(ctx, fmt.Sprintf("/%s", SubnetEndpointPrefix), http.MethodGet, filter, nil, response)
 	return response, err
 }
 

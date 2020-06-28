@@ -22,6 +22,7 @@ func newForemanEnvironmentCommand(cli *CLI) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:                   "environment",
 		Short:                 "Manage environments",
+		Aliases:               []string{"env", "enve"},
 		Args:                  cobra.NoArgs,
 		TraverseChildren:      true,
 		DisableFlagsInUseLine: true,

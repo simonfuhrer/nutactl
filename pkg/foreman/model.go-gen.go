@@ -2,6 +2,8 @@
 // Any changes will be lost if this file is regenerated.
 // see https://github.com/cheekybits/genny
 
+// maybe someone find a better solution. For now this is more than a workaround.
+//
 package foreman
 
 import (
@@ -12,7 +14,7 @@ import (
 	"strings"
 )
 
-var ModelEndpointPrefix = fmt.Sprintf("%ss", strings.ToLower("Model"))
+var ModelEndpointPrefix = fmt.Sprintf("%s", strings.ToLower("Models"))
 
 type QueryResponseModel struct {
 	QueryResponse
@@ -34,12 +36,13 @@ func (c *Client) GetModelByID(ctx context.Context, id int) (*Model, error) {
 
 func (c *Client) GetModelByName(ctx context.Context, name string) (*Model, error) {
 	response := new(QueryResponseModel)
-	err := c.requestSearchHelper(ctx, fmt.Sprintf("/%s", ModelEndpointPrefix), http.MethodGet, "name", name, nil, response)
+	filter := fmt.Sprintf("%s=\"%s\"", strings.ToLower("Name"), name)
+	err := c.requestSearchHelper(ctx, fmt.Sprintf("/%s", ModelEndpointPrefix), http.MethodGet, filter, nil, response)
 	if err != nil {
 		return nil, err
 	}
 	if len(response.Results) == 0 {
-		return nil, fmt.Errorf("Model not found: %s", name)
+		return nil, fmt.Errorf("Model not found")
 
 	}
 	return &response.Results[0], err
@@ -48,6 +51,12 @@ func (c *Client) GetModelByName(ctx context.Context, name string) (*Model, error
 func (c *Client) ListModel(ctx context.Context) (*QueryResponseModel, error) {
 	response := new(QueryResponseModel)
 	err := c.requestHelper(ctx, fmt.Sprintf("/%s", ModelEndpointPrefix), http.MethodGet, nil, response)
+	return response, err
+}
+
+func (c *Client) SearchModel(ctx context.Context, filter string) (*QueryResponseModel, error) {
+	response := new(QueryResponseModel)
+	err := c.requestSearchHelper(ctx, fmt.Sprintf("/%s", ModelEndpointPrefix), http.MethodGet, filter, nil, response)
 	return response, err
 }
 

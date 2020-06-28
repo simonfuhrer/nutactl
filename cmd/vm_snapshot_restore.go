@@ -32,7 +32,7 @@ func newVMSnapshotRestoreCommand(cli *CLI) *cobra.Command {
 	}
 	flags := cmd.Flags()
 	flags.StringP("name", "n", "", "Snapshot Name")
-	MarkFlagsRequired(cmd, "name")
+	markFlagsRequired(cmd, "name")
 
 	return cmd
 }
