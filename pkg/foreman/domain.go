@@ -5,7 +5,7 @@ package foreman
 type Domain struct {
 	// Inherits the base object's attributes
 	ForemanObject
-	Fullname   string                `json:"fullname",omitempty`
+	Fullname   string                `json:"fullname,omitempty"`
 	DNS        interface{}           `json:"dns"`
 	DNSID      int                   `json:"dns_id,omitempty"`
 	Parameters []Parameters          `json:"parameters,omitempty"`
@@ -27,7 +27,7 @@ type ForemanNetInterface struct {
 
 type NewDomainData struct {
 	ForemanObject
-	Fullname             string                 `json:"fullname",omitempty`
+	Fullname             string                 `json:"fullname,omitempty"`
 	ParametersAttributes []ParametersAttributes `json:"domain_parameters_attributes,omitempty"`
 }
 

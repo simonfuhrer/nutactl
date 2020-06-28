@@ -270,7 +270,7 @@ type HostTemplate struct {
 
 func (c *Client) getHostTemplate(ctx context.Context, host *Host, templateType string) (*HostTemplate, error) {
 	response := new(HostTemplate)
-	err := c.requestHelper(ctx, fmt.Sprintf("/%s/%d/template/", HostEndpointPrefix, host.ID, templateType), http.MethodGet, nil, response)
+	err := c.requestHelper(ctx, fmt.Sprintf("/%s/%d/template/%s", HostEndpointPrefix, host.ID, templateType), http.MethodGet, nil, response)
 	return response, err
 }
 
