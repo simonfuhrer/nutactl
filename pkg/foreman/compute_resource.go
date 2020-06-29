@@ -53,8 +53,8 @@ func (c *Client) GetComputeResourceStorageDomains(ctx context.Context, computeRe
 	return response, err
 }
 
-func (c *Client) GetComputeResourceAvailableNetworks(ctx context.Context, computeResource *ComputeResource, filter string) (*QueryResponseComputeResourceStorageDomains, error) {
-	response := new(QueryResponseComputeResourceStorageDomains)
+func (c *Client) GetComputeResourceAvailableNetworks(ctx context.Context, computeResource *ComputeResource, filter string) (*QueryResponseComputeResourceAvailableNetworks, error) {
+	response := new(QueryResponseComputeResourceAvailableNetworks)
 	err := c.requestSearchHelper(ctx, fmt.Sprintf("/%s/%d/available_networks", ComputeResourceEndpointPrefix, computeResource.ID), http.MethodGet, filter, nil, response)
 	return response, err
 }

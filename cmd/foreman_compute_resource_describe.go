@@ -18,6 +18,7 @@ import (
 	"github.com/simonfuhrer/nutactl/cmd/displayers"
 	foreman "github.com/simonfuhrer/nutactl/pkg/foreman"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 func newForemanComputeResourceDescribeCommand(cli *CLI) *cobra.Command {
@@ -28,20 +29,31 @@ func newForemanComputeResourceDescribeCommand(cli *CLI) *cobra.Command {
 		Args:                  cobra.ExactArgs(1),
 		TraverseChildren:      true,
 		DisableFlagsInUseLine: true,
-		RunE:                  cli.wrap(runForemanComouteResourceDescribe),
+		RunE:                  cli.wrap(runForemanComputeResourceDescribe),
 	}
 	flags := cmd.Flags()
+	flags.Bool("show-networks", false, "show only available networks")
 	addOutputFormatFlags(flags, "json")
 
 	return cmd
 }
 
-func runForemanComouteResourceDescribe(cli *CLI, cmd *cobra.Command, args []string) error {
+func runForemanComputeResourceDescribe(cli *CLI, cmd *cobra.Command, args []string) error {
 	idOrName := args[0]
+	showNetworks := viper.GetBool("show-networks")
+
 	computeresource, err := cli.ForemanClient().GetComputeResource(cli.Context, idOrName)
 	if err != nil {
 		return err
 	}
+	if showNetworks {
+		computeresourceNetworks, err := cli.ForemanClient().GetComputeResourceAvailableNetworks(cli.Context, computeresource, "")
+		if err != nil {
+			return err
+		}
+		outputResponse(displayers.ForemanComputeResourceNetworks{QueryResponseComputeResourceAvailableNetworks: *computeresourceNetworks})
+	}
+
 	computeresourceList := foreman.QueryResponseComputeResource{
 		Results: []foreman.ComputeResource{*computeresource},
 	}
