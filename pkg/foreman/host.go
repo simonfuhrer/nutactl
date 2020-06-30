@@ -74,6 +74,7 @@ type Host struct {
 	ConfigurationStatusLabel string            `json:"configuration_status_label,omitempty"`
 	BuildStatus              int               `json:"build_status,omitempty"`
 	BuildStatusLabel         string            `json:"build_status_label,omitempty"`
+	LastReport               string            `json:"last_report,omitempty"`
 	PuppetProxyID            int               `json:"puppet_proxy_id,omitempty"`
 	PuppetProxyName          string            `json:"puppet_proxy_name,omitempty"`
 	PuppetCAProxyID          int               `json:"puppet_ca_proxy_id,omitempty"`
@@ -163,7 +164,7 @@ type NewHostData struct {
 	ForemanObject
 	EnvironmentID            int                       `json:"environment_id,omitempty"`
 	IP                       string                    `json:"ip,omitempty"`
-	Mac                      string                    `json:"mac" validate:"required"`
+	Mac                      string                    `json:"mac,omitempty"`
 	ArchitectureID           int                       `json:"architecture_id,omitempty"`
 	DomainID                 int                       `json:"domain_id" validate:"required"`
 	RealmID                  int                       `json:"realm_id,omitempty"`
@@ -203,7 +204,7 @@ type ComputeAttributesXenHost struct {
 	VCPUsMax        string `json:"vcpus_max"`
 	ImageUUID       string `json:"image_id"`
 	ConfigDrive     string `json:"configdrive"`
-	Start           bool   `json:"start"`
+	Start           string `json:"start"`
 	ISO             string `json:"iso"`
 	HypervisorHost  string `json:"hypervisor_host"`
 	BuiltinTemplate string `json:"builtin_template"`

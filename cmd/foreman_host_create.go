@@ -132,20 +132,12 @@ func runForemanHostCreate(cli *CLI, cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("missing os architectur")
 	}
 
-	if len(mac) == 0 {
-		mac, err = generateMac()
-		if err != nil {
-			return err
-		}
-	}
-
 	request := foreman.HostRequest{
 		Host: foreman.NewHostData{
 			ForemanObject: foreman.ForemanObject{
 				Name:       name,
 				LocationID: location.ID,
 			},
-			Mac:               mac,
 			DomainID:          domain.ID,
 			OperatingsystemID: os.ID,
 			ArchitectureID:    os.Architectures[0].ID,
@@ -153,6 +145,16 @@ func runForemanHostCreate(cli *CLI, cmd *cobra.Command, args []string) error {
 			ProvisionMethod:   provisionMethod,
 			Managed:           true,
 		},
+	}
+
+	if len(computeResourceIDOrName) == 0 {
+		if len(mac) == 0 {
+			mac, err = generateMac()
+			if err != nil {
+				return err
+			}
+		}
+		request.Host.Mac = mac
 	}
 
 	if len(computeResourceIDOrName) > 0 {
@@ -202,10 +204,13 @@ func runForemanHostCreate(cli *CLI, cmd *cobra.Command, args []string) error {
 		if !found {
 			return fmt.Errorf("missing computeprofile in computeresource")
 		}
-
+		startHoststring := "0"
+		if startHost {
+			startHoststring = "1"
+		}
 		request.Host.ComputeAttributes = &foreman.ComputeAttributesXenHost{
 			ImageUUID:   images.Results[0].UUID,
-			Start:       startHost,
+			Start:       startHoststring,
 			TargetSR:    targetSR,
 			ConfigDrive: "1",
 			VCPUsMax:    fmt.Sprintf("%d", computeProfile.ComputeAttributes[indexAttr].VMAttrs.VCPUsMax),

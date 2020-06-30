@@ -19,6 +19,7 @@ import (
 
 	"github.com/simonfuhrer/nutactl/cmd/displayers"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 func newForemanSubnetListCommand(cli *CLI) *cobra.Command {
@@ -31,12 +32,23 @@ func newForemanSubnetListCommand(cli *CLI) *cobra.Command {
 		RunE:                  cli.wrap(runForemanSubnetList),
 	}
 	flags := cmd.Flags()
+	flags.StringP("filter", "f", "", "Foreman search filter (e.g. os ~ windows and environment == test_win)")
 	addOutputFormatFlags(flags, "table")
 
 	return cmd
 }
 
 func runForemanSubnetList(cli *CLI, cmd *cobra.Command, args []string) error {
+	filter := viper.GetString("filter")
+
+	if filter != "" {
+		subnetList, err := cli.ForemanClient().SearchSubnet(cli.Context, filter)
+		if err != nil {
+			return err
+		}
+		return outputResponse(displayers.ForemanSubnets{QueryResponseSubnet: *subnetList})
+	}
+
 	list, err := cli.ForemanClient().ListSubnet(cli.Context)
 
 	if err != nil {

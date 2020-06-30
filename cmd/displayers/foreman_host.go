@@ -51,6 +51,8 @@ func (o ForemanHosts) header() []string {
 		"Environment",
 		"Model",
 		"Build Status",
+		"Last Report",
+		"Status",
 		"UpdatedAt",
 		"CreatedAt",
 	}
@@ -66,6 +68,8 @@ func (o ForemanHosts) TableData(w io.Writer) error {
 			host.EnvironmentName,
 			host.ModelName,
 			host.BuildStatusLabel,
+			host.LastReport,
+			host.GlobalStatusLabel,
 			host.UpdatedAt,
 			host.CreatedAt,
 		}
