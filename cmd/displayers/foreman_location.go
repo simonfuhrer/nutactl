@@ -56,8 +56,8 @@ func (o ForemanLocations) TableData(w io.Writer) error {
 		data[i] = []string{
 			fmt.Sprintf("%v", loc.ID),
 			loc.Name,
-			loc.UpdatedAt,
-			loc.CreatedAt,
+			fmt.Sprintf("%v", loc.UpdatedAt),
+			fmt.Sprintf("%v", loc.CreatedAt),
 		}
 	}
 	return displayTable(w, data, o.header())

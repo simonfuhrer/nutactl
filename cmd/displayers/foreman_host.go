@@ -17,6 +17,7 @@ package displayers
 import (
 	"fmt"
 	"io"
+	"time"
 
 	"github.com/simonfuhrer/nutactl/pkg/foreman"
 )
@@ -58,6 +59,10 @@ func (o ForemanHosts) header() []string {
 	}
 }
 func (o ForemanHosts) TableData(w io.Writer) error {
+	utc, err := time.LoadLocation("Europe/Zurich")
+	if err != nil {
+		return err
+	}
 	data := make([][]string, len(o.Results))
 	for i, host := range o.Results {
 		data[i] = []string{
@@ -70,8 +75,8 @@ func (o ForemanHosts) TableData(w io.Writer) error {
 			host.BuildStatusLabel,
 			host.LastReport,
 			host.GlobalStatusLabel,
-			host.UpdatedAt,
-			host.CreatedAt,
+			fmt.Sprintf("%s", host.UpdatedAt.In(utc)),
+			fmt.Sprintf("%s", host.CreatedAt.In(utc)),
 		}
 	}
 	return displayTable(w, data, o.header())

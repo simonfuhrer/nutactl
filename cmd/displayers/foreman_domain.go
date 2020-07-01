@@ -56,8 +56,8 @@ func (o ForemanDomains) TableData(w io.Writer) error {
 		data[i] = []string{
 			fmt.Sprintf("%v", domain.ID),
 			domain.Name,
-			domain.UpdatedAt,
-			domain.CreatedAt,
+			fmt.Sprintf("%v", domain.UpdatedAt),
+			fmt.Sprintf("%v", domain.CreatedAt),
 		}
 	}
 	return displayTable(w, data, o.header())

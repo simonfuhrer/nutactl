@@ -62,8 +62,8 @@ func (o ForemanOperatingSystems) TableData(w io.Writer) error {
 			os.Name,
 			os.Family,
 			os.ReleaseName,
-			os.UpdatedAt,
-			os.CreatedAt,
+			fmt.Sprintf("%v", os.UpdatedAt),
+			fmt.Sprintf("%v", os.CreatedAt),
 		}
 	}
 	return displayTable(w, data, o.header())

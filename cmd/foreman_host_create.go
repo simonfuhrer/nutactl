@@ -55,6 +55,8 @@ func newForemanHostCreateCommand(cli *CLI) *cobra.Command {
 	flags.Bool("build", true, "host build mode")
 	flags.Bool("start-host", false, "start host after creation")
 	flags.String("provisionmethod", "build", "build or image")
+	flags.IntSlice("volume", nil, "additional volume to be created in GB (can be specified multiple times)")
+
 	markFlagsRequired(cmd, "domain", "os", "location")
 	return cmd
 }
@@ -80,6 +82,7 @@ func runForemanHostCreate(cli *CLI, cmd *cobra.Command, args []string) error {
 	computeResourceIDOrName := viper.GetString("compute-resource")
 	computeProfileIDOrName := viper.GetString("compute-profile")
 	startHost := viper.GetBool("start-host")
+	volumes := viper.GetIntSlice("volume")
 
 	var computeResource *foreman.ComputeResource
 	if len(subnetIDOrName) == 0 && len(ip) > 0 {
@@ -217,6 +220,30 @@ func runForemanHostCreate(cli *CLI, cmd *cobra.Command, args []string) error {
 			MemoryMax:   fmt.Sprintf("%d", computeProfile.ComputeAttributes[indexAttr].VMAttrs.MemoryMax),
 			MemoryMin:   fmt.Sprintf("%d", computeProfile.ComputeAttributes[indexAttr].VMAttrs.MemoryMin),
 		}
+
+		if len(volumes) > 0 {
+			request.Host.ComputeAttributes.VolumeAttributes = &foreman.VolumesAttributes{}
+			for index, volSize := range volumes {
+				vol := foreman.ComputeVolume{
+					SR:            targetSR,
+					VirtualSizeGB: fmt.Sprintf("%d", volSize),
+				}
+				switch index {
+				case 0:
+					request.Host.ComputeAttributes.VolumeAttributes.First = &vol
+				case 1:
+					request.Host.ComputeAttributes.VolumeAttributes.Second = &vol
+				case 2:
+					request.Host.ComputeAttributes.VolumeAttributes.Third = &vol
+				case 3:
+					request.Host.ComputeAttributes.VolumeAttributes.Fourth = &vol
+				case 5:
+					request.Host.ComputeAttributes.VolumeAttributes.Fifth = &vol
+				default:
+					return fmt.Errorf("to many volumes provided")
+				}
+			}
+		}
 	}
 
 	if len(environmentIDOrName) > 0 {
@@ -330,7 +357,9 @@ func runForemanHostCreate(cli *CLI, cmd *cobra.Command, args []string) error {
 	if len(comment) > 0 {
 		request.Host.Comment = comment
 	}
-
+	fmt.Println()
+	fmt.Println(PrettyJson(request))
+	//return nil
 	s.Suffix = fmt.Sprintf(" Creating VM %s --> Final create Host", name)
 	host, err := cli.ForemanClient().CreateHost(cli.Context, &request)
 	if err != nil {

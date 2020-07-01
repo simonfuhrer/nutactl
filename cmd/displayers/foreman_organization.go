@@ -56,8 +56,8 @@ func (o ForemanOrganizations) TableData(w io.Writer) error {
 		data[i] = []string{
 			fmt.Sprintf("%v", org.ID),
 			org.Name,
-			org.UpdatedAt,
-			org.CreatedAt,
+			fmt.Sprintf("%v", org.UpdatedAt),
+			fmt.Sprintf("%v", org.CreatedAt),
 		}
 	}
 	return displayTable(w, data, o.header())

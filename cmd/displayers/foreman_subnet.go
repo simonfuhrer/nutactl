@@ -64,8 +64,8 @@ func (o ForemanSubnets) TableData(w io.Writer) error {
 			subnet.NetworkType,
 			subnet.Ipam,
 			fmt.Sprintf("%v", subnet.Vlanid),
-			subnet.UpdatedAt,
-			subnet.CreatedAt,
+			fmt.Sprintf("%v", subnet.UpdatedAt),
+			fmt.Sprintf("%v", subnet.CreatedAt),
 		}
 	}
 	return displayTable(w, data, o.header())

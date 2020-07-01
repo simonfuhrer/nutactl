@@ -201,18 +201,34 @@ type ComputeAttributesXenHost struct {
 	MemoryMin string `json:"memory_min,omitempty"`
 	MemoryMax string `json:"memory_max,omitempty"`
 	//fix foreman_xen to be an integer
-	VCPUsMax        string `json:"vcpus_max"`
-	ImageUUID       string `json:"image_id"`
-	ConfigDrive     string `json:"configdrive"`
-	Start           string `json:"start"`
-	ISO             string `json:"iso"`
-	HypervisorHost  string `json:"hypervisor_host"`
-	BuiltinTemplate string `json:"builtin_template"`
-	TargetSR        string `json:"target_sr"`
+	VCPUsMax         string             `json:"vcpus_max"`
+	ImageUUID        string             `json:"image_id"`
+	ConfigDrive      string             `json:"configdrive"`
+	Start            string             `json:"start"`
+	ISO              string             `json:"iso"`
+	HypervisorHost   string             `json:"hypervisor_host"`
+	BuiltinTemplate  string             `json:"builtin_template"`
+	VolumeAttributes *VolumesAttributes `json:"volumes_attributes,omitempty"`
+
+	TargetSR string `json:"target_sr"`
 }
 
 type ComputeAttributesXenNetwork struct {
 	NetworkUUID string `json:"network"`
+}
+
+type VolumesAttributes struct {
+	First  *ComputeVolume `json:"1,omitempty"`
+	Second *ComputeVolume `json:"2,omitempty"`
+	Third  *ComputeVolume `json:"3,omitempty"`
+	Fourth *ComputeVolume `json:"4,omitempty"`
+	Fifth  *ComputeVolume `json:"5,omitempty"`
+}
+
+type ComputeVolume struct {
+	_Delete       string `json:"_delete"`
+	SR            string `json:"sr"`
+	VirtualSizeGB string `json:"virtual_size_gb"`
 }
 
 type ParametersAttributes struct {

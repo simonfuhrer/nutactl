@@ -56,8 +56,8 @@ func (o ForemanEnvironments) TableData(w io.Writer) error {
 		data[i] = []string{
 			fmt.Sprintf("%v", env.ID),
 			env.Name,
-			env.UpdatedAt,
-			env.CreatedAt,
+			fmt.Sprintf("%v", env.UpdatedAt),
+			fmt.Sprintf("%v", env.CreatedAt),
 		}
 	}
 	return displayTable(w, data, o.header())

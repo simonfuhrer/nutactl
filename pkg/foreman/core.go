@@ -2,6 +2,7 @@ package foreman
 
 import (
 	"strconv"
+	"time"
 )
 
 // Base Foreman API object in the Foreman object model.  Every API entity
@@ -12,10 +13,10 @@ type ForemanObject struct {
 	// Human readable name of the API object
 	Name string `json:"name" validate:"required"` // Timestamp of when the API object was created in the following format:
 	// "%Y-%m-%d %H-%M-%S UTC"
-	CreatedAt string `json:"created_at,omitempty"`
+	CreatedAt time.Time `json:"created_at,omitempty"`
 	// Timestamp of when the API object was last updated in the following format:
 	// "%Y-%m-%d %H-%M-%S UTC"
-	UpdatedAt string `json:"updated_at,omitempty"`
+	UpdatedAt time.Time `json:"updated_at,omitempty"`
 
 	LocationName string `json:"location_name,omitempty"`
 	LocationID   int    `json:"location_id,omitempty"`
