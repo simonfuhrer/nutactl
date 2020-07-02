@@ -18,34 +18,23 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func newForemanCommand(cli *CLI) *cobra.Command {
+func newForemanSmartClassParemeterCommand(cli *CLI) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:                   "foreman",
-		Short:                 "Manage foreman objects",
+		Use:                   "smartclassparameter",
+		Short:                 "Manage smart class parameters",
 		Args:                  cobra.NoArgs,
 		TraverseChildren:      true,
 		DisableFlagsInUseLine: true,
-		RunE:                  cli.wrap(runForeman),
+		RunE:                  cli.wrap(runSmartClassParameter),
 	}
 	cmd.AddCommand(
-		newForemanHostCommand(cli),
-		newForemanDomainCommand(cli),
-		newForemanHostgroupCommand(cli),
-		newForemanSubnetCommand(cli),
-		newForemanOSCommand(cli),
-		newForemanEnvironmentCommand(cli),
-		newForemanLocationCommand(cli),
-		newForemanOrganizationCommand(cli),
-		newForemanSmartProxyCommand(cli),
-		newForemanComputeResourceCommand(cli),
-		newForemanComputeProfileCommand(cli),
-		newForemanSmartClassParemeterCommand(cli),
+		newForemanSmartClassParameterListCommand(cli),
+		newForemanSmartClassParameterDescribeCommand(cli),
 	)
 	cmd.Flags().SortFlags = false
-	cmd.PersistentFlags().SortFlags = false
 	return cmd
 }
 
-func runForeman(cli *CLI, cmd *cobra.Command, args []string) error {
+func runSmartClassParameter(cli *CLI, cmd *cobra.Command, args []string) error {
 	return cmd.Usage()
 }
