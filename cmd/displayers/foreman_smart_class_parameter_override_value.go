@@ -17,71 +17,54 @@ package displayers
 import (
 	"fmt"
 	"io"
-	"time"
 
 	"github.com/simonfuhrer/nutactl/pkg/foreman"
 )
 
 // ForemanHosts wraps a foreman Hosts.
-type ForemanHosts struct {
-	foreman.QueryResponseHost
+type ForemanSmartClassParameterOverrideValues struct {
+	foreman.QueryResponseSmartClassParameterOverrideValue
 }
 
-func (o ForemanHosts) JSON(w io.Writer) error {
+func (o ForemanSmartClassParameterOverrideValues) JSON(w io.Writer) error {
 	return displayJSON(w, o.Results)
 }
 
-func (o ForemanHosts) JSONPath(w io.Writer, template string) error {
+func (o ForemanSmartClassParameterOverrideValues) JSONPath(w io.Writer, template string) error {
 	return displayJSONPath(w, template, o.Results)
 }
 
-func (o ForemanHosts) PP(w io.Writer) error {
+func (o ForemanSmartClassParameterOverrideValues) PP(w io.Writer) error {
 	return displayPP(w, o.Results)
 }
 
-func (o ForemanHosts) YAML(w io.Writer) error {
+func (o ForemanSmartClassParameterOverrideValues) YAML(w io.Writer) error {
 	return displayYAML(w, o.Results)
 }
 
-func (o ForemanHosts) header() []string {
+func (o ForemanSmartClassParameterOverrideValues) header() []string {
 	return []string{
 		"ID",
-		"Name",
-		"IP",
-		"OS",
-		"Environment",
-		"Model",
-		"Build Status",
-		"Last Report",
-		"Status",
-		//"UpdatedAt",
-		"CreatedAt",
+		"Match",
+		"Value",
+		"Omit",
+		"UsePuppetDefault",
 	}
 }
-func (o ForemanHosts) TableData(w io.Writer) error {
-	utc, err := time.LoadLocation("Europe/Zurich")
-	if err != nil {
-		return err
-	}
+func (o ForemanSmartClassParameterOverrideValues) TableData(w io.Writer) error {
 	data := make([][]string, len(o.Results))
-	for i, host := range o.Results {
+	for i, p := range o.Results {
 		data[i] = []string{
-			fmt.Sprintf("%v", host.ID),
-			host.Name,
-			host.IP,
-			host.OperatingsystemName,
-			host.EnvironmentName,
-			host.ModelName,
-			host.BuildStatusLabel,
-			host.LastReport,
-			host.GlobalStatusLabel,
-			//fmt.Sprintf("%s", host.UpdatedAt.In(utc)),
-			fmt.Sprintf("%s", host.CreatedAt.In(utc)),
+			fmt.Sprintf("%v", p.ID),
+			p.Match,
+			p.Value,
+			fmt.Sprintf("%v", p.Omit),
+			fmt.Sprintf("%v", p.UsePuppetDefault),
 		}
 	}
 	return displayTable(w, data, o.header())
 }
 
-func (o ForemanHosts) Text(w io.Writer) error {
+func (o ForemanSmartClassParameterOverrideValues) Text(w io.Writer) error {
 	return nil
 }

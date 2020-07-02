@@ -1,5 +1,11 @@
 package foreman
 
+import (
+	"context"
+	"fmt"
+	"net/http"
+)
+
 //go:generate genny -in=template.go -out=$GOFILE-gen.go gen "Type=SmartClassParameter Value=Name Path=smart_class_parameters"
 
 type SmartClassParameter struct {
@@ -23,4 +29,40 @@ type SmartClassParameter struct {
 	OverrideValuesCount int         `json:"override_values_count,omitempty"`
 	DefaultValue        interface{} `json:"default_value,omitempty"`
 	PuppetclassName     string      `json:"puppetclass_name,omitempty"`
+}
+
+type SmartClassParameterOverrideValue struct {
+	ForemanObject
+	Match            string `json:"match,omitempty"`
+	Value            string `json:"value,omitempty"`
+	Omit             bool   `json:"omit,omitempty"`
+	UsePuppetDefault bool   `json:"use_puppet_default,omitempty"`
+}
+
+type NewSmartClassParameterOverrideValueData struct {
+	Match string `json:"match,omitempty"`
+	Value string `json:"value,omitempty"`
+	Omit  bool   `json:"omit,omitempty"`
+}
+
+type QueryResponseSmartClassParameterOverrideValue struct {
+	QueryResponse
+	Results []SmartClassParameterOverrideValue `json:"results"`
+}
+
+// Structures used to create a new host
+type SmartClassParameterOverrideValueRequest struct {
+	OverrideValue NewSmartClassParameterOverrideValueData `json:"override_value"`
+}
+
+func (c *Client) ListSmartClassParameterOverrideValues(ctx context.Context, smartClassParamater *SmartClassParameter) (*QueryResponseSmartClassParameterOverrideValue, error) {
+	response := new(QueryResponseSmartClassParameterOverrideValue)
+	err := c.requestHelper(ctx, fmt.Sprintf("/%s/%d/override_values", SmartClassParameterEndpointPrefix, smartClassParamater.ID), http.MethodGet, nil, response)
+	return response, err
+}
+
+func (c *Client) CreateSmartClassParameterOverrideValue(ctx context.Context, smartClassParamater *SmartClassParameter, createRequest interface{}) (*SmartClassParameterOverrideValue, error) {
+	response := new(SmartClassParameterOverrideValue)
+	err := c.requestHelper(ctx, fmt.Sprintf("/%s/%d/override_values", SmartClassParameterEndpointPrefix, smartClassParamater.ID), http.MethodPost, createRequest, response)
+	return response, err
 }

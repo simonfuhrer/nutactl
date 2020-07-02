@@ -54,10 +54,12 @@ func newForemanHostCreateCommand(cli *CLI) *cobra.Command {
 	flags.String("compute-profile", "", "compute-profile name or id")
 	flags.Bool("build", true, "host build mode")
 	flags.Bool("start-host", false, "start host after creation")
+	flags.Bool("auto-patching", true, "start host after creation (default true)")
 	flags.String("provisionmethod", "build", "build or image")
+	flags.String("hlq", "", "initial application identifier")
 	flags.IntSlice("volume", nil, "additional volume to be created in GB (can be specified multiple times)")
 
-	markFlagsRequired(cmd, "domain", "os", "location")
+	markFlagsRequired(cmd, "domain", "os", "location", "hlq")
 	return cmd
 }
 
@@ -81,7 +83,9 @@ func runForemanHostCreate(cli *CLI, cmd *cobra.Command, args []string) error {
 	provisionMethod := viper.GetString("provisionmethod")
 	computeResourceIDOrName := viper.GetString("compute-resource")
 	computeProfileIDOrName := viper.GetString("compute-profile")
+	hlq := viper.GetString("hlq")
 	startHost := viper.GetBool("start-host")
+	autoPatching := viper.GetBool("auto-patching")
 	volumes := viper.GetIntSlice("volume")
 
 	var computeResource *foreman.ComputeResource
@@ -357,14 +361,65 @@ func runForemanHostCreate(cli *CLI, cmd *cobra.Command, args []string) error {
 	if len(comment) > 0 {
 		request.Host.Comment = comment
 	}
-	fmt.Println()
-	fmt.Println(PrettyJson(request))
-	//return nil
+
+	//fmt.Println()
+	//fmt.Println(PrettyJson(request))
+
 	s.Suffix = fmt.Sprintf(" Creating VM %s --> Final create Host", name)
 	host, err := cli.ForemanClient().CreateHost(cli.Context, &request)
 	if err != nil {
 		return err
 	}
+
+	if !autoPatching {
+		filterClass := "puppetclass_name==bi_patchlabel && parameter==update_active"
+		valueOverride := "false"
+		if os.Family == "Windows" {
+			filterClass = "puppetclass_name==bi_winupdate && parameter==enc_wsusserver_url"
+			valueOverride = "http://wsus-manual.mgmtbi.ch:8530"
+		}
+		smartClassParam, err := cli.foremanclient.SearchSmartClassParameter(cli.Context, filterClass)
+		if err != nil {
+			return err
+		}
+		if len(smartClassParam.Results) == 0 {
+			return fmt.Errorf("SmartClass not found: %s", filterClass)
+		}
+		smartClassOverrideRequest := foreman.SmartClassParameterOverrideValueRequest{
+			OverrideValue: foreman.NewSmartClassParameterOverrideValueData{
+				Match: fmt.Sprintf("fqdn=%s.%s", name, domain.Name),
+				Value: valueOverride,
+			},
+		}
+		_, err = cli.foremanclient.CreateSmartClassParameterOverrideValue(cli.Context, &smartClassParam.Results[0], smartClassOverrideRequest)
+		if err != nil {
+			return err
+		}
+	}
+
+	if len(hlq) > 0 {
+		// get hlq
+		hlqFilter := "puppetclass_name==bi_application_identifier && parameter==bi_application_identifier"
+		smartClassParamHLQ, err := cli.foremanclient.SearchSmartClassParameter(cli.Context, hlqFilter)
+		if err != nil {
+			return err
+		}
+		if len(smartClassParamHLQ.Results) == 0 {
+			return fmt.Errorf("SmartClass not found: %s", hlqFilter)
+		}
+
+		smartClassOverrideRequest := foreman.SmartClassParameterOverrideValueRequest{
+			OverrideValue: foreman.NewSmartClassParameterOverrideValueData{
+				Match: fmt.Sprintf("fqdn=%s.%s", name, domain.Name),
+				Value: hlq,
+			},
+		}
+		_, err = cli.foremanclient.CreateSmartClassParameterOverrideValue(cli.Context, &smartClassParamHLQ.Results[0], smartClassOverrideRequest)
+		if err != nil {
+			return err
+		}
+	}
+
 	s.Stop()
 	fmt.Printf("Host %s with ID %d created\n", host.Name, host.ID)
 

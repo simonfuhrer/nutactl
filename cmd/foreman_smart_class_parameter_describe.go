@@ -18,6 +18,7 @@ import (
 	"github.com/simonfuhrer/nutactl/cmd/displayers"
 	foreman "github.com/simonfuhrer/nutactl/pkg/foreman"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 func newForemanSmartClassParameterDescribeCommand(cli *CLI) *cobra.Command {
@@ -31,6 +32,7 @@ func newForemanSmartClassParameterDescribeCommand(cli *CLI) *cobra.Command {
 		RunE:                  cli.wrap(runForemanSmartClassParameterDescribe),
 	}
 	flags := cmd.Flags()
+	flags.Bool("show-overrides", false, "Show SmartClassParameterOverrideValues")
 	addOutputFormatFlags(flags, "json")
 
 	return cmd
@@ -38,12 +40,22 @@ func newForemanSmartClassParameterDescribeCommand(cli *CLI) *cobra.Command {
 
 func runForemanSmartClassParameterDescribe(cli *CLI, cmd *cobra.Command, args []string) error {
 	idOrName := args[0]
+	showOverrides := viper.GetBool("show-overrides")
+
 	param, err := cli.ForemanClient().GetSmartClassParameter(cli.Context, idOrName)
 	if err != nil {
 		return err
 	}
 	paramList := foreman.QueryResponseSmartClassParameter{
 		Results: []foreman.SmartClassParameter{*param},
+	}
+
+	if showOverrides {
+		overrideList, err := cli.ForemanClient().ListSmartClassParameterOverrideValues(cli.Context, param)
+		if err != nil {
+			return err
+		}
+		return outputResponse(displayers.ForemanSmartClassParameterOverrideValues{QueryResponseSmartClassParameterOverrideValue: *overrideList})
 	}
 
 	return outputResponse(displayers.ForemanSmartClassParameters{QueryResponseSmartClassParameter: paramList})

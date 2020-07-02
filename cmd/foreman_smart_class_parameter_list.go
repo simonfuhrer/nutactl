@@ -19,6 +19,7 @@ import (
 
 	"github.com/simonfuhrer/nutactl/cmd/displayers"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 func newForemanSmartClassParameterListCommand(cli *CLI) *cobra.Command {
@@ -38,7 +39,15 @@ func newForemanSmartClassParameterListCommand(cli *CLI) *cobra.Command {
 }
 
 func runForemanSmartClassParameterList(cli *CLI, cmd *cobra.Command, args []string) error {
-	//filter := viper.GetString("filter")
+	filter := viper.GetString("filter")
+	if filter != "" {
+		list, err := cli.ForemanClient().SearchSmartClassParameter(cli.Context, filter)
+		if err != nil {
+			return err
+		}
+		return outputResponse(displayers.ForemanSmartClassParameters{QueryResponseSmartClassParameter: *list})
+
+	}
 
 	list, err := cli.ForemanClient().ListSmartClassParameter(cli.Context)
 
