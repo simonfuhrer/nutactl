@@ -61,7 +61,7 @@ func generateMac() (string, error) {
 }
 
 func generatePassword(length int) (string, error) {
-	characters := "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%^&*-"
+	characters := "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%&*-"
 	result := ""
 	for {
 		if len(result) >= length {

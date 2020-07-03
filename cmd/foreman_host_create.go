@@ -338,7 +338,7 @@ func runForemanHostCreate(cli *CLI, cmd *cobra.Command, args []string) error {
 	}
 
 	if buildmode {
-		rootPass, err := generatePassword(12)
+		rootPass, err := generatePassword(16)
 		if err != nil {
 			return err
 		}
@@ -422,6 +422,9 @@ func runForemanHostCreate(cli *CLI, cmd *cobra.Command, args []string) error {
 
 	s.Stop()
 	fmt.Printf("Host %s with ID %d created\n", host.Name, host.ID)
+	if buildmode {
+		fmt.Printf("Password: %s\n", request.Host.RootPass)
+	}
 
 	return nil
 }
