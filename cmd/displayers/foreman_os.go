@@ -19,6 +19,8 @@ import (
 	"io"
 
 	"github.com/simonfuhrer/nutactl/pkg/foreman"
+
+	humanize "github.com/dustin/go-humanize"
 )
 
 // ForemanHosts wraps a foreman Hosts.
@@ -62,8 +64,8 @@ func (o ForemanOperatingSystems) TableData(w io.Writer) error {
 			os.Name,
 			os.Family,
 			os.ReleaseName,
-			fmt.Sprintf("%v", os.UpdatedAt),
-			fmt.Sprintf("%v", os.CreatedAt),
+			humanize.Time(os.UpdatedAt),
+			humanize.Time(os.CreatedAt),
 		}
 	}
 	return displayTable(w, data, o.header())

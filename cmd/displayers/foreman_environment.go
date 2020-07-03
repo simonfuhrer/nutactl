@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"io"
 
+	humanize "github.com/dustin/go-humanize"
 	"github.com/simonfuhrer/nutactl/pkg/foreman"
 )
 
@@ -56,8 +57,8 @@ func (o ForemanEnvironments) TableData(w io.Writer) error {
 		data[i] = []string{
 			fmt.Sprintf("%v", env.ID),
 			env.Name,
-			fmt.Sprintf("%v", env.UpdatedAt),
-			fmt.Sprintf("%v", env.CreatedAt),
+			humanize.Time(env.UpdatedAt),
+			humanize.Time(env.CreatedAt),
 		}
 	}
 	return displayTable(w, data, o.header())

@@ -17,6 +17,7 @@ package displayers
 import (
 	"io"
 
+	humanize "github.com/dustin/go-humanize"
 	"github.com/tecbiz-ch/nutanix-go-sdk/schema"
 )
 
@@ -62,8 +63,8 @@ func (o VMRecoveryPoints) TableData(w io.Writer) error {
 		data[i] = []string{
 			vmrecoveryPoint.Metadata.UUID,
 			vmrecoveryPoint.Spec.Name,
-			vmrecoveryPoint.Metadata.CreationTime.String(),
-			vmrecoveryPoint.Spec.Resources.ExpirationTime.String(),
+			humanize.Time(*vmrecoveryPoint.Metadata.CreationTime),
+			humanize.Time(*vmrecoveryPoint.Spec.Resources.ExpirationTime),
 			vmrecoveryPoint.Spec.Resources.RecoveryPointType,
 			vmrecoveryPoint.Spec.Resources.ParentVMReference.Name,
 			vmrecoveryPoint.Status.State,

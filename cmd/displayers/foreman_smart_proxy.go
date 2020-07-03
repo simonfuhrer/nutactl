@@ -17,8 +17,8 @@ package displayers
 import (
 	"fmt"
 	"io"
-	"time"
 
+	humanize "github.com/dustin/go-humanize"
 	"github.com/simonfuhrer/nutactl/pkg/foreman"
 )
 
@@ -54,10 +54,6 @@ func (o ForemanSmartProxies) header() []string {
 	}
 }
 func (o ForemanSmartProxies) TableData(w io.Writer) error {
-	utc, err := time.LoadLocation("Europe/Zurich")
-	if err != nil {
-		return err
-	}
 	data := make([][]string, len(o.Results))
 	for i, proxy := range o.Results {
 		proxyType := ""
@@ -69,8 +65,8 @@ func (o ForemanSmartProxies) TableData(w io.Writer) error {
 			proxy.Name,
 			proxy.URL,
 			proxyType,
-			fmt.Sprintf("%v", proxy.UpdatedAt.In(utc)),
-			fmt.Sprintf("%v", proxy.CreatedAt.In(utc)),
+			humanize.Time(proxy.UpdatedAt),
+			humanize.Time(proxy.CreatedAt),
 		}
 	}
 	return displayTable(w, data, o.header())

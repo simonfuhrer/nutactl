@@ -17,8 +17,8 @@ package displayers
 import (
 	"fmt"
 	"io"
-	"time"
 
+	humanize "github.com/dustin/go-humanize"
 	"github.com/simonfuhrer/nutactl/pkg/foreman"
 )
 
@@ -54,15 +54,11 @@ func (o ForemanHosts) header() []string {
 		"Build Status",
 		"Last Report",
 		"Status",
-		//"UpdatedAt",
+		"UpdatedAt",
 		"CreatedAt",
 	}
 }
 func (o ForemanHosts) TableData(w io.Writer) error {
-	utc, err := time.LoadLocation("Europe/Zurich")
-	if err != nil {
-		return err
-	}
 	data := make([][]string, len(o.Results))
 	for i, host := range o.Results {
 		data[i] = []string{
@@ -73,10 +69,10 @@ func (o ForemanHosts) TableData(w io.Writer) error {
 			host.EnvironmentName,
 			host.ModelName,
 			host.BuildStatusLabel,
-			host.LastReport,
+			humanize.Time(host.LastReport),
 			host.GlobalStatusLabel,
-			//fmt.Sprintf("%s", host.UpdatedAt.In(utc)),
-			fmt.Sprintf("%s", host.CreatedAt.In(utc)),
+			humanize.Time(host.UpdatedAt),
+			humanize.Time(host.CreatedAt),
 		}
 	}
 	return displayTable(w, data, o.header())

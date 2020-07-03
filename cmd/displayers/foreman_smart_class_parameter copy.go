@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"io"
 
+	humanize "github.com/dustin/go-humanize"
 	"github.com/simonfuhrer/nutactl/pkg/foreman"
 )
 
@@ -49,6 +50,8 @@ func (o ForemanSmartClassParameters) header() []string {
 		"Required",
 		"Parameter",
 		"Type",
+		"UpdatedAt",
+		"CreatedAt",
 	}
 }
 func (o ForemanSmartClassParameters) TableData(w io.Writer) error {
@@ -60,6 +63,8 @@ func (o ForemanSmartClassParameters) TableData(w io.Writer) error {
 			fmt.Sprintf("%v", p.Required),
 			p.Parameter,
 			p.ParameterType,
+			humanize.Time(p.UpdatedAt),
+			humanize.Time(p.CreatedAt),
 		}
 	}
 	return displayTable(w, data, o.header())

@@ -19,6 +19,7 @@ import (
 	"io"
 	"strconv"
 
+	humanize "github.com/dustin/go-humanize"
 	"github.com/tecbiz-ch/nutanix-go-sdk/pkg/utils"
 	"github.com/tecbiz-ch/nutanix-go-sdk/schema"
 )
@@ -58,6 +59,8 @@ func (o VMs) header() []string {
 		"MiB",
 		"CPU",
 		"Status",
+		"UpdatedAt",
+		"CreatedAt",
 	}
 }
 
@@ -85,6 +88,8 @@ func (o VMs) TableData(w io.Writer) error {
 			strconv.FormatInt(vm.Spec.Resources.MemorySizeMib, 10),
 			fmt.Sprintf("%d/%d", vm.Spec.Resources.NumSockets, vm.Spec.Resources.NumVcpusPerSocket),
 			utils.StringValue(vm.Status.State),
+			humanize.Time(*vm.Metadata.LastUpdateTime),
+			humanize.Time(*vm.Metadata.CreationTime),
 		}
 	}
 	return displayTable(w, data, o.header())

@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"io"
 
+	humanize "github.com/dustin/go-humanize"
 	"github.com/simonfuhrer/nutactl/pkg/foreman"
 )
 
@@ -56,8 +57,8 @@ func (o ForemanDomains) TableData(w io.Writer) error {
 		data[i] = []string{
 			fmt.Sprintf("%v", domain.ID),
 			domain.Name,
-			fmt.Sprintf("%v", domain.UpdatedAt),
-			fmt.Sprintf("%v", domain.CreatedAt),
+			humanize.Time(domain.UpdatedAt),
+			humanize.Time(domain.CreatedAt),
 		}
 	}
 	return displayTable(w, data, o.header())

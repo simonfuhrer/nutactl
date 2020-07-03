@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"io"
 
+	humanize "github.com/dustin/go-humanize"
 	"github.com/simonfuhrer/nutactl/pkg/foreman"
 )
 
@@ -56,8 +57,8 @@ func (o ForemanOrganizations) TableData(w io.Writer) error {
 		data[i] = []string{
 			fmt.Sprintf("%v", org.ID),
 			org.Name,
-			fmt.Sprintf("%v", org.UpdatedAt),
-			fmt.Sprintf("%v", org.CreatedAt),
+			humanize.Time(org.UpdatedAt),
+			humanize.Time(org.CreatedAt),
 		}
 	}
 	return displayTable(w, data, o.header())

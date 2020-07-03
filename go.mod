@@ -6,6 +6,7 @@ require (
 	git.atilf.fr/atilf/portainer-cli v0.0.0-20200322180140-6ded01c86537
 	github.com/briandowns/spinner v1.11.1
 	github.com/cheekybits/genny v1.0.0
+	github.com/dustin/go-humanize v1.0.0
 	github.com/fatih/color v1.9.0
 	github.com/go-playground/validator/v10 v10.3.0
 	github.com/hokaccha/go-prettyjson v0.0.0-20190818114111-108c894c2c0e

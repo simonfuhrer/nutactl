@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"time"
 )
 
 //go:generate genny -in=template.go -out=$GOFILE-gen.go gen "Type=Host Value=Name Path=hosts"
@@ -74,7 +75,7 @@ type Host struct {
 	ConfigurationStatusLabel string            `json:"configuration_status_label,omitempty"`
 	BuildStatus              int               `json:"build_status,omitempty"`
 	BuildStatusLabel         string            `json:"build_status_label,omitempty"`
-	LastReport               string            `json:"last_report,omitempty"`
+	LastReport               time.Time         `json:"last_report,omitempty"`
 	PuppetProxyID            int               `json:"puppet_proxy_id,omitempty"`
 	PuppetProxyName          string            `json:"puppet_proxy_name,omitempty"`
 	PuppetCAProxyID          int               `json:"puppet_ca_proxy_id,omitempty"`

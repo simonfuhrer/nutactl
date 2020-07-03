@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"io"
 
+	humanize "github.com/dustin/go-humanize"
 	"github.com/simonfuhrer/nutactl/pkg/foreman"
 )
 
@@ -49,6 +50,8 @@ func (o ForemanSmartClassParameterOverrideValues) header() []string {
 		"Value",
 		"Omit",
 		"UsePuppetDefault",
+		"UpdatedAt",
+		"CreatedAt",
 	}
 }
 func (o ForemanSmartClassParameterOverrideValues) TableData(w io.Writer) error {
@@ -60,6 +63,8 @@ func (o ForemanSmartClassParameterOverrideValues) TableData(w io.Writer) error {
 			p.Value,
 			fmt.Sprintf("%v", p.Omit),
 			fmt.Sprintf("%v", p.UsePuppetDefault),
+			humanize.Time(p.UpdatedAt),
+			humanize.Time(p.CreatedAt),
 		}
 	}
 	return displayTable(w, data, o.header())

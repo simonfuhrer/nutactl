@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"io"
 
+	humanize "github.com/dustin/go-humanize"
 	"github.com/simonfuhrer/nutactl/pkg/foreman"
 )
 
@@ -64,8 +65,8 @@ func (o ForemanSubnets) TableData(w io.Writer) error {
 			subnet.NetworkType,
 			subnet.Ipam,
 			fmt.Sprintf("%v", subnet.Vlanid),
-			fmt.Sprintf("%v", subnet.UpdatedAt),
-			fmt.Sprintf("%v", subnet.CreatedAt),
+			humanize.Time(subnet.UpdatedAt),
+			humanize.Time(subnet.CreatedAt),
 		}
 	}
 	return displayTable(w, data, o.header())

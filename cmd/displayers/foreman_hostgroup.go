@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"io"
 
+	humanize "github.com/dustin/go-humanize"
 	"github.com/simonfuhrer/nutactl/pkg/foreman"
 )
 
@@ -60,8 +61,8 @@ func (o ForemanHostgroups) TableData(w io.Writer) error {
 			fmt.Sprintf("%v", hostgroup.Title),
 			fmt.Sprintf("%v", hostgroup.Name),
 			fmt.Sprintf("%v", hostgroup.EnvironmentName),
-			fmt.Sprintf("%v", hostgroup.UpdatedAt),
-			fmt.Sprintf("%v", hostgroup.CreatedAt),
+			humanize.Time(hostgroup.UpdatedAt),
+			humanize.Time(hostgroup.CreatedAt),
 		}
 	}
 	return displayTable(w, data, o.header())

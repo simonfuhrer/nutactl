@@ -18,6 +18,7 @@ import (
 	"io"
 	"strconv"
 
+	humanize "github.com/dustin/go-humanize"
 	"github.com/tecbiz-ch/nutanix-go-sdk/schema"
 )
 
@@ -53,6 +54,8 @@ func (o Images) header() []string {
 		"ImageType",
 		"MB",
 		"Status",
+		"UpdatedAt",
+		"CreatedAt",
 	}
 }
 func (o Images) TableData(w io.Writer) error {
@@ -70,6 +73,8 @@ func (o Images) TableData(w io.Writer) error {
 			image.Spec.Resources.ImageType,
 			size,
 			image.Status.State,
+			humanize.Time(*image.Metadata.LastUpdateTime),
+			humanize.Time(*image.Metadata.CreationTime),
 		}
 	}
 	return displayTable(w, data, o.header())
