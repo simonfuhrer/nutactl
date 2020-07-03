@@ -227,7 +227,7 @@ type VolumesAttributes struct {
 }
 
 type ComputeVolume struct {
-	_Delete       string `json:"_delete"`
+	Delete        string `json:"_delete"`
 	SR            string `json:"sr"`
 	VirtualSizeGB string `json:"virtual_size_gb"`
 }
