@@ -58,6 +58,7 @@ func newForemanHostCreateCommand(cli *CLI) *cobra.Command {
 	flags.String("provisionmethod", "build", "build or image")
 	flags.String("template-name", "", "compute-ressource templatename")
 	flags.String("hlq", "", "initial application identifier")
+	flags.String("target-sr", "", "manually specified storage repository UUID or Name")
 	flags.Bool("netbackup", false, "link netbackup puppetclass to host")
 	flags.IntSlice("volume", nil, "additional volume to be created in GB (can be specified multiple times)")
 
@@ -90,7 +91,7 @@ func runForemanHostCreate(cli *CLI, cmd *cobra.Command, args []string) error {
 	netbackup := viper.GetBool("netbackup")
 	autoPatching := viper.GetBool("auto-patching")
 	volumes := viper.GetIntSlice("volume")
-
+	targetSRUUIDOrName := viper.GetString("target-sr")
 	templateName := viper.GetString("template-name")
 
 	var computeResource *foreman.ComputeResource
@@ -211,6 +212,26 @@ func runForemanHostCreate(cli *CLI, cmd *cobra.Command, args []string) error {
 			return fmt.Errorf("template not found")
 		}
 
+		//TODO Refresh
+
+		//		curl 'https://foreman.svc.kb-bedag.ch/foreman_xen/cache/refresh' \
+		//  -H 'Connection: keep-alive' \
+		//  -H 'Accept: */*' \
+		//  -H 'DNT: 1' \
+		//  -H 'X-CSRF-Token: FrFkOl0MQGkkGQIatPa4RUFI3hWqYpmJWfUZpMIMPot+DeZTnwgQrFATXNTTVevqRRp7ZwAgafWOY2PXrv3UrA==' \
+		//  -H 'X-Requested-With: XMLHttpRequest' \
+		//  -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36' \
+		//  -H 'Content-Type: application/x-www-form-urlencoded; charset=UTF-8' \
+		//  -H 'Origin: https://foreman.svc.kb-bedag.ch' \
+		//  -H 'Sec-Fetch-Site: same-origin' \
+		//  -H 'Sec-Fetch-Mode: cors' \
+		//  -H 'Sec-Fetch-Dest: empty' \
+		//  -H 'Referer: https://foreman.svc.kb-bedag.ch/hosts/new' \
+		//  -H 'Accept-Language: de-DE,de;q=0.9,en;q=0.8,en-US;q=0.7,en-GB;q=0.6,fr;q=0.5,it;q=0.4' \
+		//  -H 'Cookie: timezone=Europe%2FZurich; _session_id=73776fd2d016562465eebdef2b976591' \
+		//  --data-raw 'type=storage_pools&compute_resource_id=142' \
+		//  --compressed
+
 		storageDomains, err := cli.foremanclient.GetComputeResourceStorageDomains(cli.Context, computeResource, "")
 		if err != nil {
 			return err
@@ -219,17 +240,33 @@ func runForemanHostCreate(cli *CLI, cmd *cobra.Command, args []string) error {
 		if len(storageDomains.Results) == 0 {
 			return fmt.Errorf("missing compute resource storage domains. check computeresource")
 		}
-
 		targetSR := ""
+		foundSR := false
 		for _, sr := range storageDomains.Results {
 			if sr.Name == "bedag-images" {
 				continue
 			}
-			if sr.Freespace > 126248550400 { //more than 100GB Free
+			if len(targetSRUUIDOrName) > 0 {
+				if sr.Name == targetSRUUIDOrName {
+					targetSR = sr.UUID
+					foundSR = true
+					break
+				}
+				if sr.UUID == targetSRUUIDOrName {
+					targetSR = sr.UUID
+					foundSR = true
+					break
+				}
+			}
+			if sr.Freespace > 126248550400 && len(targetSRUUIDOrName) == 0 { //more than 100GB Free
 				targetSR = sr.UUID
+				break
 			}
 		}
-
+		if len(targetSRUUIDOrName) > 0 && foundSR == false {
+			return fmt.Errorf("No target Repository found with UUIDorName: %s", targetSRUUIDOrName)
+		}
+		fmt.Printf("Using Target SR: %s\n", targetSR)
 		var indexAttr int
 		found := false
 		for index, attr := range computeProfile.ComputeAttributes {
