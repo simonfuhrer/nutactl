@@ -286,6 +286,20 @@ type HostTemplate struct {
 	Template string `json:"template,omitempty"`
 }
 
+type PuppetClassToHostRequest struct {
+	PuppetclassID int        `json:"puppetclass_id,omitempty"`
+	HostClass     *HostClass `json:"host_class,omitempty"`
+}
+
+type HostClass struct {
+	PuppetclassID int `json:"puppetclass_id,omitempty"`
+}
+
+type PuppetClassToHost struct {
+	PuppetclassID int `json:"puppetclass_id"`
+	HostID        int `json:"host_id"`
+}
+
 func (c *Client) getHostTemplate(ctx context.Context, host *Host, templateType string) (*HostTemplate, error) {
 	response := new(HostTemplate)
 	err := c.requestHelper(ctx, fmt.Sprintf("/%s/%d/template/%s", HostEndpointPrefix, host.ID, templateType), http.MethodGet, nil, response)
@@ -298,4 +312,16 @@ func (c *Client) GetHostUserDataTemplate(ctx context.Context, host *Host) (*Host
 
 func (c *Client) GetHostCloudInitTemplate(ctx context.Context, host *Host) (*HostTemplate, error) {
 	return c.getHostTemplate(ctx, host, "cloud-init")
+}
+
+func (c *Client) AddPuppetClassToHost(ctx context.Context, hostID, classID int) (*PuppetClassToHost, error) {
+	response := new(PuppetClassToHost)
+	createRequest := PuppetClassToHostRequest{
+		PuppetclassID: classID,
+		HostClass: &HostClass{
+			PuppetclassID: classID,
+		},
+	}
+	err := c.requestHelper(ctx, fmt.Sprintf("/%s/%d/puppetclass_ids", HostEndpointPrefix, hostID), http.MethodPost, createRequest, response)
+	return response, err
 }

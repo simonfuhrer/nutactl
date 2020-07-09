@@ -47,7 +47,6 @@ func (o ForemanHostgroups) header() []string {
 	return []string{
 		"ID",
 		"Title",
-		"Name",
 		"Environment",
 		"UpdatedAt",
 		"CreatedAt",
@@ -59,7 +58,6 @@ func (o ForemanHostgroups) TableData(w io.Writer) error {
 		data[i] = []string{
 			fmt.Sprintf("%v", hostgroup.ID),
 			fmt.Sprintf("%v", hostgroup.Title),
-			fmt.Sprintf("%v", hostgroup.Name),
 			fmt.Sprintf("%v", hostgroup.EnvironmentName),
 			humanize.Time(hostgroup.UpdatedAt),
 			humanize.Time(hostgroup.CreatedAt),

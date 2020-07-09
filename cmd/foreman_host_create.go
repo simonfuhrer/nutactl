@@ -56,7 +56,9 @@ func newForemanHostCreateCommand(cli *CLI) *cobra.Command {
 	flags.Bool("start-host", false, "start host after creation")
 	flags.Bool("auto-patching", true, "start host after creation (default true)")
 	flags.String("provisionmethod", "build", "build or image")
+	flags.String("template-name", "", "compute-ressource templatename")
 	flags.String("hlq", "", "initial application identifier")
+	flags.Bool("netbackup", false, "link netbackup puppetclass to host")
 	flags.IntSlice("volume", nil, "additional volume to be created in GB (can be specified multiple times)")
 
 	markFlagsRequired(cmd, "domain", "os", "location", "hlq")
@@ -85,8 +87,11 @@ func runForemanHostCreate(cli *CLI, cmd *cobra.Command, args []string) error {
 	computeProfileIDOrName := viper.GetString("compute-profile")
 	hlq := viper.GetString("hlq")
 	startHost := viper.GetBool("start-host")
+	netbackup := viper.GetBool("netbackup")
 	autoPatching := viper.GetBool("auto-patching")
 	volumes := viper.GetIntSlice("volume")
+
+	templateName := viper.GetString("template-name")
 
 	var computeResource *foreman.ComputeResource
 	if len(subnetIDOrName) == 0 && len(ip) > 0 {
@@ -190,14 +195,40 @@ func runForemanHostCreate(cli *CLI, cmd *cobra.Command, args []string) error {
 		if len(images.Results) == 0 {
 			return fmt.Errorf("missing compute resource image for os %s", os.Name)
 		}
+		foremanImageUUID := ""
+		for _, img := range images.Results {
+			if !strings.Contains(img.Name, "DEV") && len(templateName) == 0 {
+				foremanImageUUID = img.UUID
+				break
+			}
+			if len(templateName) > 0 && img.Name == templateName {
+				foremanImageUUID = img.UUID
+				break
+			}
+		}
+
+		if len(foremanImageUUID) == 0 {
+			return fmt.Errorf("template not found")
+		}
+
 		storageDomains, err := cli.foremanclient.GetComputeResourceStorageDomains(cli.Context, computeResource, "")
 		if err != nil {
 			return err
 		}
+
 		if len(storageDomains.Results) == 0 {
 			return fmt.Errorf("missing compute resource storage domains. check computeresource")
 		}
-		targetSR := storageDomains.Results[0].UUID
+
+		targetSR := ""
+		for _, sr := range storageDomains.Results {
+			if sr.Name == "bedag-images" {
+				continue
+			}
+			if sr.Freespace > 126248550400 { //more than 100GB Free
+				targetSR = sr.UUID
+			}
+		}
 
 		var indexAttr int
 		found := false
@@ -215,8 +246,9 @@ func runForemanHostCreate(cli *CLI, cmd *cobra.Command, args []string) error {
 		if startHost {
 			startHoststring = "1"
 		}
+
 		request.Host.ComputeAttributes = &foreman.ComputeAttributesXenHost{
-			ImageUUID:   images.Results[0].UUID,
+			ImageUUID:   foremanImageUUID,
 			Start:       startHoststring,
 			TargetSR:    targetSR,
 			ConfigDrive: "1",
@@ -415,6 +447,13 @@ func runForemanHostCreate(cli *CLI, cmd *cobra.Command, args []string) error {
 			},
 		}
 		_, err = cli.foremanclient.CreateSmartClassParameterOverrideValue(cli.Context, &smartClassParamHLQ.Results[0], smartClassOverrideRequest)
+		if err != nil {
+			return err
+		}
+	}
+
+	if netbackup {
+		err := enableNetbackup(cli, os, host.ID)
 		if err != nil {
 			return err
 		}

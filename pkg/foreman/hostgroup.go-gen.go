@@ -36,7 +36,7 @@ func (c *Client) GetHostgroupByID(ctx context.Context, id int) (*Hostgroup, erro
 
 func (c *Client) GetHostgroupByName(ctx context.Context, name string) (*Hostgroup, error) {
 	response := new(QueryResponseHostgroup)
-	filter := fmt.Sprintf("%s=\"%s\"", strings.ToLower("Name"), name)
+	filter := fmt.Sprintf("%s=\"%s\"", strings.ToLower("Title"), name)
 	err := c.requestSearchHelper(ctx, fmt.Sprintf("/%s", HostgroupEndpointPrefix), http.MethodGet, filter, nil, response)
 	if err != nil {
 		return nil, err

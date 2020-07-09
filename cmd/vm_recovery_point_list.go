@@ -36,16 +36,17 @@ func newVMRecoveryPointListCommand(cli *CLI) *cobra.Command {
 }
 
 func runVMRecoveryPointList(cli *CLI, cmd *cobra.Command, args []string) error {
+
 	var list *schema.VMRecoveryPointListIntent
 	var err error
 
 	if len(args) > 0 {
 		vmUUIDOrName := args[0]
-		_, err = cli.Client().VM.Get(cli.Context, vmUUIDOrName)
+		vm, err := cli.Client().VM.Get(cli.Context, vmUUIDOrName)
 		if err != nil {
 			return err
 		}
-		opts := &schema.DSMetadata{Filter: fmt.Sprintf("vm_name==%s", "972f5476-8e80-4bf2-adb0-b639f6c831c8")}
+		opts := &schema.DSMetadata{Filter: fmt.Sprintf("vm_name==%s", vm.Spec.Name)}
 		list, err = cli.Client().VMRecoveryPoint.List(cli.Context, opts)
 		if err != nil {
 			return err

@@ -58,6 +58,7 @@ func (o VMs) header() []string {
 		"Cluster",
 		"MiB",
 		"CPU",
+		"Disks",
 		"Status",
 		"UpdatedAt",
 		"CreatedAt",
@@ -67,26 +68,27 @@ func (o VMs) header() []string {
 func (o VMs) TableData(w io.Writer) error {
 	data := make([][]string, len(o.Entities))
 	for i, vm := range o.Entities {
-		subnet := ""
+		subnetName := ""
 		ip := ""
 		if len(vm.Spec.Resources.NicList) > 0 {
-			subnet = vm.Spec.Resources.NicList[0].SubnetReference.Name
+			subnetName = vm.Spec.Resources.NicList[0].SubnetReference.Name
 			ip = vm.Status.Resources.NicList[0].IPEndpointList[0].IP
 		}
-		state := ""
+		project := ""
 		if vm.Metadata.ProjectReference != nil {
-			state = vm.Metadata.ProjectReference.Name
+			project = vm.Metadata.ProjectReference.Name
 		}
 		data[i] = []string{
 			vm.Metadata.UUID,
 			vm.Spec.Name,
 			vm.Spec.Resources.PowerState,
-			state,
-			subnet,
+			project,
+			subnetName,
 			ip,
 			vm.Spec.ClusterReference.Name,
 			strconv.FormatInt(vm.Spec.Resources.MemorySizeMib, 10),
 			fmt.Sprintf("%d/%d", vm.Spec.Resources.NumSockets, vm.Spec.Resources.NumVcpusPerSocket),
+			fmt.Sprintf("%d", len(vm.Spec.Resources.DiskList)),
 			utils.StringValue(vm.Status.State),
 			humanize.Time(*vm.Metadata.LastUpdateTime),
 			humanize.Time(*vm.Metadata.CreationTime),

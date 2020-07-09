@@ -36,7 +36,7 @@ func (c *Client) GetSmartClassParameterByID(ctx context.Context, id int) (*Smart
 
 func (c *Client) GetSmartClassParameterByName(ctx context.Context, name string) (*SmartClassParameter, error) {
 	response := new(QueryResponseSmartClassParameter)
-	filter := fmt.Sprintf("%s=\"%s\"", strings.ToLower("Name"), name)
+	filter := fmt.Sprintf("%s=\"%s\"", strings.ToLower("Puppetclass_name"), name)
 	err := c.requestSearchHelper(ctx, fmt.Sprintf("/%s", SmartClassParameterEndpointPrefix), http.MethodGet, filter, nil, response)
 	if err != nil {
 		return nil, err

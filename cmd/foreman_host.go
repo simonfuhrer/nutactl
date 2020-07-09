@@ -15,6 +15,9 @@
 package cmd
 
 import (
+	"fmt"
+
+	"github.com/simonfuhrer/nutactl/pkg/foreman"
 	"github.com/spf13/cobra"
 )
 
@@ -31,6 +34,7 @@ func newForemanHostCommand(cli *CLI) *cobra.Command {
 		newForemanHostListCommand(cli),
 		newForemanHostDescribeCommand(cli),
 		newForemanHostCreateCommand(cli),
+		newForemanHostUpdateCommand(cli),
 		newForemanHostDeleteCommand(cli),
 	)
 	cmd.Flags().SortFlags = false
@@ -39,4 +43,23 @@ func newForemanHostCommand(cli *CLI) *cobra.Command {
 
 func runForemanHost(cli *CLI, cmd *cobra.Command, args []string) error {
 	return cmd.Usage()
+}
+
+func enableNetbackup(cli *CLI, os *foreman.OperatingSystem, hostID int) error {
+	filterClass := "puppetclass_name==bi_backup::nbu"
+	if os.Family == "Windows" {
+		filterClass = "puppetclass_name==bi_databackup"
+	}
+	smartClasses, err := cli.foremanclient.SearchSmartClassParameter(cli.Context, filterClass)
+	if err != nil {
+		return err
+	}
+	if len(smartClasses.Results) == 0 {
+		return fmt.Errorf("PuppetSmartClass not found: %s", filterClass)
+	}
+	_, err = cli.foremanclient.AddPuppetClassToHost(cli.Context, hostID, smartClasses.Results[0].PuppetclassID)
+	if err != nil {
+		return err
+	}
+	return nil
 }

@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-//go:generate genny -in=template.go -out=$GOFILE-gen.go gen "Type=SmartClassParameter Value=Name Path=smart_class_parameters"
+//go:generate genny -in=template.go -out=$GOFILE-gen.go gen "Type=SmartClassParameter Value=puppetclass_name Path=smart_class_parameters"
 
 type SmartClassParameter struct {
 	// Inherits the base object's attributes
