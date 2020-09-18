@@ -15,7 +15,9 @@
 package cmd
 
 import (
-	"git.atilf.fr/atilf/portainer-cli/cmd/util"
+	"fmt"
+	"os"
+
 	"github.com/mitchellh/go-homedir"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -83,7 +85,10 @@ func initConfig() {
 	} else {
 		// Find home directory.
 		home, err := homedir.Dir()
-		util.HandleError(err)
+		if err != nil {
+			fmt.Println("error: ", err)
+			os.Exit(1)
+		}
 
 		// Search config in home directory with name ".nutactl" (without extension).
 		viper.AddConfigPath(home)
