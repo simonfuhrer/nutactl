@@ -23,9 +23,20 @@ import (
 	"github.com/k0kubun/pp"
 	"github.com/olekukonko/tablewriter"
 	"github.com/pkg/errors"
+	"gopkg.in/yaml.v2"
 	"k8s.io/client-go/util/jsonpath"
-	"sigs.k8s.io/yaml"
 )
+
+func JSONToYAML(j []byte) ([]byte, error) {
+	var jsonObj interface{}
+
+	err := yaml.Unmarshal(j, &jsonObj)
+	if err != nil {
+		return nil, err
+	}
+
+	return yaml.Marshal(jsonObj)
+}
 
 func displayYAML(w io.Writer, data interface{}) error {
 	j, err := json.Marshal(data)
@@ -33,7 +44,7 @@ func displayYAML(w io.Writer, data interface{}) error {
 		return errors.Wrap(err, "marshaling to JSON")
 	}
 
-	y, err := yaml.JSONToYAML(j)
+	y, err := JSONToYAML(j)
 	if err != nil {
 		return errors.Wrap(err, "converting JSON to YAML")
 	}
