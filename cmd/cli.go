@@ -45,7 +45,7 @@ type CLI struct {
 	clusters            map[string]string
 }
 
-//NewCLI sadasdsa
+//NewCLI ...
 func NewCLI() *CLI {
 	viper.SetEnvPrefix(appName)
 	viper.AutomaticEnv()
@@ -83,7 +83,7 @@ func (c *CLI) Client() *nutanix.Client {
 			nutanix.WithEndpoint(viper.GetString("api-url")),
 		}
 		if viper.GetBool("insecure") {
-			opts = append(opts, nutanix.WithInsecure())
+			opts = append(opts, nutanix.WithSkipVerify())
 		}
 
 		logrus.Debugf("creating Nutanix Client")
