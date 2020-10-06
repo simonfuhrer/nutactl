@@ -29,6 +29,7 @@ func newCategoryListCommand(cli *CLI) *cobra.Command {
 		Short:                 "List categories",
 		TraverseChildren:      true,
 		DisableFlagsInUseLine: true,
+		PreRunE:               cli.ensureContext,
 		RunE:                  cli.wrap(runCategoryList),
 	}
 	flags := cmd.Flags()

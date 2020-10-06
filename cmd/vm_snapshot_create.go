@@ -28,6 +28,7 @@ func newVMSnapshotCreateCommand(cli *CLI) *cobra.Command {
 		Args:                  cobra.ExactArgs(1),
 		TraverseChildren:      true,
 		DisableFlagsInUseLine: true,
+		PreRunE:               cli.ensureContext,
 		RunE:                  cli.wrap(runVMSnapshotCreate),
 	}
 	cmd.Flags().StringP("name", "n", "", "Snapshot Name")

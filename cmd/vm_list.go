@@ -33,6 +33,7 @@ func newVMListCommand(cli *CLI) *cobra.Command {
 		Aliases:               []string{"l", "li"},
 		TraverseChildren:      true,
 		DisableFlagsInUseLine: true,
+		PreRunE:               cli.ensureContext,
 		RunE:                  cli.wrap(runVMList),
 	}
 	addOutputFormatFlags(cmd.Flags(), "table")

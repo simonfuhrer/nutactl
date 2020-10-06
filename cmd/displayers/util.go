@@ -38,7 +38,7 @@ func JSONToYAML(j []byte) ([]byte, error) {
 	return yaml.Marshal(jsonObj)
 }
 
-func displayYAML(w io.Writer, data interface{}) error {
+func DisplayYAML(w io.Writer, data interface{}) error {
 	j, err := json.Marshal(data)
 	if err != nil {
 		return errors.Wrap(err, "marshaling to JSON")
@@ -54,7 +54,7 @@ func displayYAML(w io.Writer, data interface{}) error {
 	return nil
 }
 
-func displayJSON(w io.Writer, data interface{}) error {
+func DisplayJSON(w io.Writer, data interface{}) error {
 	j, err := prettyjson.Marshal(data)
 	if err != nil {
 		return errors.Wrap(err, "marshaling to JSON")
@@ -64,7 +64,7 @@ func displayJSON(w io.Writer, data interface{}) error {
 	return nil
 }
 
-func displayPP(w io.Writer, data interface{}) error {
+func DisplayPP(w io.Writer, data interface{}) error {
 	_, err := pp.Println(w, data)
 	if err != nil {
 		return errors.Wrap(err, "marshaling to PP")
@@ -72,7 +72,7 @@ func displayPP(w io.Writer, data interface{}) error {
 	return nil
 }
 
-func displayTable(w io.Writer, data [][]string, header []string) error {
+func DisplayTable(w io.Writer, data [][]string, header []string) error {
 	table := tablewriter.NewWriter(w)
 	table.SetHeader(header)
 	table.SetAutoWrapText(false)
@@ -91,7 +91,7 @@ func displayTable(w io.Writer, data [][]string, header []string) error {
 	return nil
 }
 
-func displayJSONPath(w io.Writer, template string, data interface{}) error {
+func DisplayJSONPath(w io.Writer, template string, data interface{}) error {
 	jp := jsonpath.New("")
 	err := jp.Parse(template)
 	if err != nil {

@@ -29,19 +29,19 @@ type AvailabilityZones struct {
 //var _ Displayable = &AvailabilityZones{}
 
 func (o AvailabilityZones) JSON(w io.Writer) error {
-	return displayJSON(w, o.Entities)
+	return DisplayJSON(w, o.Entities)
 }
 
 func (o AvailabilityZones) JSONPath(w io.Writer, template string) error {
-	return displayJSONPath(w, template, o.Entities)
+	return DisplayJSONPath(w, template, o.Entities)
 }
 
 func (o AvailabilityZones) PP(w io.Writer) error {
-	return displayPP(w, o.Entities)
+	return DisplayPP(w, o.Entities)
 }
 
 func (o AvailabilityZones) YAML(w io.Writer) error {
-	return displayYAML(w, o.Entities)
+	return DisplayYAML(w, o.Entities)
 }
 
 func (o AvailabilityZones) header() []string {
@@ -59,7 +59,7 @@ func (o AvailabilityZones) TableData(w io.Writer) error {
 			utils.StringValue(av.Spec.Resources.ManagementPlaneType),
 		}
 	}
-	return displayTable(w, data, o.header())
+	return DisplayTable(w, data, o.header())
 }
 
 func (o AvailabilityZones) Text(w io.Writer) error {

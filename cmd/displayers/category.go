@@ -30,19 +30,19 @@ type Categories struct {
 //var _ Displayable = &Categories{}
 
 func (o Categories) JSON(w io.Writer) error {
-	return displayJSON(w, o.Entities)
+	return DisplayJSON(w, o.Entities)
 }
 
 func (o Categories) JSONPath(w io.Writer, template string) error {
-	return displayJSONPath(w, template, o.Entities)
+	return DisplayJSONPath(w, template, o.Entities)
 }
 
 func (o Categories) PP(w io.Writer) error {
-	return displayPP(w, o.Entities)
+	return DisplayPP(w, o.Entities)
 }
 
 func (o Categories) YAML(w io.Writer) error {
-	return displayYAML(w, o.Entities)
+	return DisplayYAML(w, o.Entities)
 }
 
 func (o Categories) header() []string {
@@ -64,7 +64,7 @@ func (o Categories) TableData(w io.Writer) error {
 			strings.Join(category.Values, ","),
 		}
 	}
-	return displayTable(w, data, o.header())
+	return DisplayTable(w, data, o.header())
 }
 
 func (o Categories) Text(w io.Writer) error {

@@ -35,6 +35,7 @@ func newVMCreateCommand(cli *CLI) *cobra.Command {
 		Args:                  cobra.ExactArgs(1),
 		TraverseChildren:      true,
 		DisableFlagsInUseLine: true,
+		PreRunE:               cli.ensureContext,
 		RunE:                  cli.wrap(runVMCreate),
 	}
 	flags := cmd.Flags()

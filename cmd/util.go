@@ -81,7 +81,7 @@ func outputResponse(d displayers.Displayable) error {
 	case strings.HasPrefix(outputFormat, "jsonpath"):
 		fields := strings.SplitN(outputFormat, "=", 2)
 		if len(fields) != 2 {
-			err = errors.New("please specify jsonpath using -o jsonpath=<path>")
+			err = fmt.Errorf("please specify jsonpath using -o jsonpath=<path>")
 			break
 		}
 		template := fields[1]

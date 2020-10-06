@@ -28,6 +28,7 @@ func newVMPowerStateOnCommand(cli *CLI) *cobra.Command {
 		Args:                  cobra.ExactArgs(1),
 		TraverseChildren:      false,
 		DisableFlagsInUseLine: true,
+		PreRunE:               cli.ensureContext,
 		RunE:                  cli.wrap(runVMPowerStateOn),
 	}
 

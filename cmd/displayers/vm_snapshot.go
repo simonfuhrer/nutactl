@@ -28,19 +28,19 @@ type VMSnapshots struct {
 //var _ Displayable = &VMSnapshots{}
 
 func (o VMSnapshots) JSON(w io.Writer) error {
-	return displayJSON(w, o.Entities)
+	return DisplayJSON(w, o.Entities)
 }
 
 func (o VMSnapshots) JSONPath(w io.Writer, template string) error {
-	return displayJSONPath(w, template, o.Entities)
+	return DisplayJSONPath(w, template, o.Entities)
 }
 
 func (o VMSnapshots) PP(w io.Writer) error {
-	return displayPP(w, o.Entities)
+	return DisplayPP(w, o.Entities)
 }
 
 func (o VMSnapshots) YAML(w io.Writer) error {
-	return displayYAML(w, o.Entities)
+	return DisplayYAML(w, o.Entities)
 }
 
 func (o VMSnapshots) header() []string {
@@ -60,7 +60,7 @@ func (o VMSnapshots) TableData(w io.Writer) error {
 			vmdisk.CreatedTime.String(),
 		}
 	}
-	return displayTable(w, data, o.header())
+	return DisplayTable(w, data, o.header())
 }
 
 func (o VMSnapshots) Text(w io.Writer) error {

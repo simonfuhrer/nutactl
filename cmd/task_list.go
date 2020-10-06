@@ -25,6 +25,7 @@ func newTaskListCommand(cli *CLI) *cobra.Command {
 		Short:                 "List tasks",
 		TraverseChildren:      true,
 		DisableFlagsInUseLine: true,
+		PreRunE:               cli.ensureContext,
 		RunE:                  cli.wrap(runTaskList),
 	}
 	flags := cmd.Flags()

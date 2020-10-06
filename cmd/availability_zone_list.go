@@ -11,6 +11,7 @@ func newAvailabilityZoneListCommand(cli *CLI) *cobra.Command {
 		Short:                 "List availability zones",
 		TraverseChildren:      true,
 		DisableFlagsInUseLine: true,
+		PreRunE:               cli.ensureContext,
 		RunE:                  cli.wrap(runAvailabilityZoneList),
 	}
 

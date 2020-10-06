@@ -15,37 +15,30 @@
 package cmd
 
 import (
-	"github.com/simonfuhrer/nutactl/cmd/displayers"
+	"fmt"
+
 	"github.com/spf13/cobra"
-	"github.com/tecbiz-ch/nutanix-go-sdk/schema"
+	"github.com/spf13/viper"
 )
 
-func newProjectDescribeCommand(cli *CLI) *cobra.Command {
+func newContextUseCommand(cli *CLI) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:                   "describe [FLAGS] PROJECT",
-		Short:                 "Describe an project",
+		Use:                   "use [FLAGS] NAME",
+		Short:                 "use a context",
 		Args:                  cobra.ExactArgs(1),
 		TraverseChildren:      true,
 		DisableFlagsInUseLine: true,
-		PreRunE:               cli.ensureContext,
-		RunE:                  cli.wrap(runProjectDescribe),
+		RunE:                  cli.wrap(runContextUse),
 	}
-	flags := cmd.Flags()
-	addOutputFormatFlags(flags, "json")
 	return cmd
 }
 
-func runProjectDescribe(cli *CLI, cmd *cobra.Command, args []string) error {
-	idOrName := args[0]
-
-	project, err := cli.Client().Project.Get(cli.Context, idOrName)
-	if err != nil {
-		return err
+func runContextUse(cli *CLI, cmd *cobra.Command, args []string) error {
+	name := args[0]
+	context := cli.config.ContextByName(name)
+	if context == nil {
+		return fmt.Errorf("context not found: %v", name)
 	}
-
-	list := schema.ProjectListIntent{
-		Entities: []*schema.ProjectIntent{project},
-	}
-
-	return outputResponse(displayers.Projects{ProjectListIntent: list})
+	viper.Set("active_context", name)
+	return viper.WriteConfig()
 }

@@ -29,19 +29,19 @@ type Images struct {
 //var _ Displayable = &Images{}
 
 func (o Images) JSON(w io.Writer) error {
-	return displayJSON(w, o.Entities)
+	return DisplayJSON(w, o.Entities)
 }
 
 func (o Images) JSONPath(w io.Writer, template string) error {
-	return displayJSONPath(w, template, o.Entities)
+	return DisplayJSONPath(w, template, o.Entities)
 }
 
 func (o Images) PP(w io.Writer) error {
-	return displayPP(w, o.Entities)
+	return DisplayPP(w, o.Entities)
 }
 
 func (o Images) YAML(w io.Writer) error {
-	return displayYAML(w, o.Entities)
+	return DisplayYAML(w, o.Entities)
 }
 
 func (o Images) header() []string {
@@ -72,7 +72,7 @@ func (o Images) TableData(w io.Writer) error {
 			image.Status.State,
 		}
 	}
-	return displayTable(w, data, o.header())
+	return DisplayTable(w, data, o.header())
 }
 
 func (o Images) Text(w io.Writer) error {

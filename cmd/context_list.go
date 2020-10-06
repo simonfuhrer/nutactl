@@ -15,36 +15,23 @@
 package cmd
 
 import (
-	"github.com/simonfuhrer/nutactl/cmd/displayers"
 	"github.com/spf13/cobra"
 )
 
-func newVMSnapshotListCommand(cli *CLI) *cobra.Command {
+func newContextListCommand(cli *CLI) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:                   "snapshot-list [FLAGS] VM",
-		Short:                 "List VM Snapshots",
-		Args:                  cobra.ExactArgs(1),
+		Use:                   "list [FLAGS]",
+		Aliases:               []string{"l", "li"},
+		Short:                 "List contexts",
 		TraverseChildren:      true,
 		DisableFlagsInUseLine: true,
-		PreRunE:               cli.ensureContext,
-		RunE:                  cli.wrap(runVMSnapshotList),
+		RunE:                  cli.wrap(runContextList),
 	}
 	flags := cmd.Flags()
 	addOutputFormatFlags(flags, "table")
 	return cmd
 }
 
-func runVMSnapshotList(cli *CLI, cmd *cobra.Command, args []string) error {
-	idOrName := args[0]
-
-	vm, err := cli.Client().VM.Get(cli.Context, idOrName)
-	if err != nil {
-		return err
-	}
-	list, err := cli.Client().Snapshot.ListByVM(cli.Context, vm)
-	if err != nil {
-		return err
-	}
-	return outputResponse(displayers.VMSnapshots{SnapshotList: *list})
-
+func runContextList(cli *CLI, cmd *cobra.Command, args []string) error {
+	return outputResponse(cli.config)
 }
