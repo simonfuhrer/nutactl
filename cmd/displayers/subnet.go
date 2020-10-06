@@ -28,7 +28,7 @@ type Subnets struct {
 	schema.SubnetListIntent
 }
 
-//var _ Displayable = &Subnets{}
+// var _ Displayable = &Subnets{}
 
 func (o Subnets) JSON(w io.Writer) error {
 	return DisplayJSON(w, o.Entities)

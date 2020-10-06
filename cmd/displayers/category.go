@@ -27,7 +27,7 @@ type Categories struct {
 	schema.CategoryKeyList
 }
 
-//var _ Displayable = &Categories{}
+// var _ Displayable = &Categories{}
 
 func (o Categories) JSON(w io.Writer) error {
 	return DisplayJSON(w, o.Entities)

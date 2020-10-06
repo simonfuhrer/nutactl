@@ -46,7 +46,7 @@ type CLI struct {
 	config              *Config
 }
 
-//NewCLI ...
+// NewCLI ...
 func NewCLI() *CLI {
 	viper.SetEnvPrefix(appName)
 	viper.AutomaticEnv()
@@ -72,7 +72,7 @@ func (c *CLI) wrap(f func(*CLI, *cobra.Command, []string) error) func(*cobra.Com
 	}
 }
 
-//Client cli ...
+// Client cli ...
 func (c *CLI) Client() *nutanix.Client {
 	if c.client == nil {
 		context := c.config.ContextByName(c.config.ActiveContext)
@@ -118,7 +118,7 @@ func (c *CLI) InitAllClusters() error {
 	return nil
 }
 
-//WaitTask ...
+// WaitTask ...
 func (c *CLI) WaitTask(ctx context.Context, taskUUID string, timeoutSeconds int) error {
 	ctx, cancel := context.WithTimeout(ctx, time.Duration(timeoutSeconds)*time.Second)
 	defer cancel()

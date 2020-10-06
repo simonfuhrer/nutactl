@@ -26,7 +26,7 @@ type AvailabilityZones struct {
 	schema.AvailabilityZoneListIntent
 }
 
-//var _ Displayable = &AvailabilityZones{}
+// var _ Displayable = &AvailabilityZones{}
 
 func (o AvailabilityZones) JSON(w io.Writer) error {
 	return DisplayJSON(w, o.Entities)

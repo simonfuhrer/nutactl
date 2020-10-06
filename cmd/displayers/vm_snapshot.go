@@ -25,7 +25,7 @@ type VMSnapshots struct {
 	v2.SnapshotList
 }
 
-//var _ Displayable = &VMSnapshots{}
+// var _ Displayable = &VMSnapshots{}
 
 func (o VMSnapshots) JSON(w io.Writer) error {
 	return DisplayJSON(w, o.Entities)

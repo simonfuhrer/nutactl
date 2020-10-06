@@ -78,8 +78,8 @@ func (o Config) Text(w io.Writer) error {
 	return nil
 }
 
-func (config *Config) ContextByName(name string) *Context {
-	for _, c := range config.Contexts {
+func (o *Config) ContextByName(name string) *Context {
+	for _, c := range o.Contexts {
 		if c.Name == name {
 			return c
 		}
@@ -87,10 +87,10 @@ func (config *Config) ContextByName(name string) *Context {
 	return nil
 }
 
-func (config *Config) RemoveContext(context *Context) {
-	for i, c := range config.Contexts {
+func (o *Config) RemoveContext(context *Context) {
+	for i, c := range o.Contexts {
 		if c == context {
-			config.Contexts = append(config.Contexts[:i], config.Contexts[i+1:]...)
+			o.Contexts = append(o.Contexts[:i], o.Contexts[i+1:]...)
 			return
 		}
 	}

@@ -26,7 +26,7 @@ type Images struct {
 	schema.ImageListIntent
 }
 
-//var _ Displayable = &Images{}
+// var _ Displayable = &Images{}
 
 func (o Images) JSON(w io.Writer) error {
 	return DisplayJSON(w, o.Entities)

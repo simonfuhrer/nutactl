@@ -25,7 +25,7 @@ type VMRecoveryPoints struct {
 	schema.VMRecoveryPointListIntent
 }
 
-//var _ Displayable = &VMRecoveryPoints{}
+// var _ Displayable = &VMRecoveryPoints{}
 
 func (o VMRecoveryPoints) JSON(w io.Writer) error {
 	return DisplayJSON(w, o.Entities)
