@@ -78,7 +78,6 @@ func (o Config) Text(w io.Writer) error {
 	return nil
 }
 
-
 func (o *Config) ContextByName(name string) *Context {
 	for _, c := range o.Contexts {
 		if c.Name == name {
@@ -87,7 +86,6 @@ func (o *Config) ContextByName(name string) *Context {
 	}
 	return nil
 }
-
 
 func (o *Config) RemoveContext(context *Context) {
 	for i, c := range o.Contexts {
