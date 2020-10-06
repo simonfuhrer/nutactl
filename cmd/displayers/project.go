@@ -28,19 +28,19 @@ type Projects struct {
 //var _ Displayable = &Projects{}
 
 func (o Projects) JSON(w io.Writer) error {
-	return displayJSON(w, o.Entities)
+	return DisplayJSON(w, o.Entities)
 }
 
 func (o Projects) JSONPath(w io.Writer, template string) error {
-	return displayJSONPath(w, template, o.Entities)
+	return DisplayJSONPath(w, template, o.Entities)
 }
 
 func (o Projects) PP(w io.Writer) error {
-	return displayPP(w, o.Entities)
+	return DisplayPP(w, o.Entities)
 }
 
 func (o Projects) YAML(w io.Writer) error {
-	return displayYAML(w, o.Entities)
+	return DisplayYAML(w, o.Entities)
 }
 
 func (o Projects) header() []string {
@@ -60,7 +60,7 @@ func (o Projects) TableData(w io.Writer) error {
 			project.Spec.Description,
 		}
 	}
-	return displayTable(w, data, o.header())
+	return DisplayTable(w, data, o.header())
 }
 
 func (o Projects) Text(w io.Writer) error {

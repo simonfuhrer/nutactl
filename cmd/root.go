@@ -48,6 +48,7 @@ func NewRootCommand(cli *CLI) *cobra.Command {
 		newSubnetCommand(cli),
 		newAvailabilityZoneCommand(cli),
 		newCategoryCommand(cli),
+		newContextCommand(cli),
 		newTaskCommand(cli),
 		newVersionCommand(cli),
 		newCompletionCommand(cli),
@@ -55,20 +56,22 @@ func NewRootCommand(cli *CLI) *cobra.Command {
 
 	rootCmd.Flags().SortFlags = false
 	flags := rootCmd.PersistentFlags()
-	flags.StringP("api-url", "a", "", "Nutanix PC Api URL [NUTACTL_API_URL]")
-	flags.StringP("username", "u", "", "Nutanix username [NUTACTL_USERNAME]")
-	flags.StringP("password", "p", "", "Nutanix password [NUTACTL_PASSWORD]")
 	flags.BoolP("insecure", "", false, "Accept insecure TLS certificates")
 	flags.StringVar(&cfgFile, "config", "", "config file (default is $HOME/.nutactl.yaml)")
 	flags.StringP("log-level", "", logrus.InfoLevel.String(), "log level (trace,debug,info,warn/warning,error,fatal,panic)")
 	flags.BoolP("log-json", "", false, "log as json")
 
 	BindAllFlags(rootCmd)
-	MarkFlagsRequired(rootCmd, "api-url", "username", "password")
+	err := viper.Unmarshal(&cli.config)
+	if err != nil {
+		fmt.Printf("unable to decode into config struct, %v", err)
+	}
 
 	return rootCmd
 }
+
 func initConfig() {
+
 	if viper.GetBool("log-json") {
 		logrus.SetFormatter(&logrus.JSONFormatter{})
 	}
@@ -97,6 +100,14 @@ func initConfig() {
 
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
-		logrus.Debug("Using config file:", viper.ConfigFileUsed())
+		logrus.Debug("Using config file: ", viper.ConfigFileUsed())
+	}
+	_, err = os.Stat(viper.ConfigFileUsed())
+	if os.IsNotExist(err) {
+		err := viper.SafeWriteConfig()
+		if err != nil {
+			fmt.Println("error2: ", err)
+			os.Exit(1)
+		}
 	}
 }

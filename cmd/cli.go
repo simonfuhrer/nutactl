@@ -43,6 +43,7 @@ type CLI struct {
 	client              *nutanix.Client
 	millisecondsPerPoll time.Duration
 	clusters            map[string]string
+	config              *Config
 }
 
 //NewCLI ...
@@ -74,13 +75,14 @@ func (c *CLI) wrap(f func(*CLI, *cobra.Command, []string) error) func(*cobra.Com
 //Client cli ...
 func (c *CLI) Client() *nutanix.Client {
 	if c.client == nil {
+		context := c.config.ContextByName(c.config.ActiveContext)
 		configCreds := nutanix.Credentials{
-			Username: viper.GetString("username"),
-			Password: viper.GetString("password"),
+			Username: context.User,
+			Password: context.Password,
 		}
 		opts := []nutanix.ClientOption{
 			nutanix.WithCredentials(&configCreds),
-			nutanix.WithEndpoint(viper.GetString("api-url")),
+			nutanix.WithEndpoint(context.Endpoint),
 		}
 		if viper.GetBool("insecure") {
 			opts = append(opts, nutanix.WithSkipVerify())
@@ -90,6 +92,13 @@ func (c *CLI) Client() *nutanix.Client {
 		c.client = nutanix.NewClient(opts...)
 	}
 	return c.client
+}
+
+func (c *CLI) ensureContext(cmd *cobra.Command, args []string) error {
+	if c.config.ActiveContext == "" || c.config.ContextByName(c.config.ActiveContext) == nil {
+		return fmt.Errorf("no active context or context does not exists")
+	}
+	return nil
 }
 
 // InitAllClusters ...

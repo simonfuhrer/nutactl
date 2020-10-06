@@ -31,19 +31,19 @@ type Tasks struct {
 //var _ Displayable = &Tasks{}
 
 func (o Tasks) JSON(w io.Writer) error {
-	return displayJSON(w, o.Entities)
+	return DisplayJSON(w, o.Entities)
 }
 
 func (o Tasks) JSONPath(w io.Writer, template string) error {
-	return displayJSONPath(w, template, o.Entities)
+	return DisplayJSONPath(w, template, o.Entities)
 }
 
 func (o Tasks) PP(w io.Writer) error {
-	return displayPP(w, o.Entities)
+	return DisplayPP(w, o.Entities)
 }
 
 func (o Tasks) YAML(w io.Writer) error {
-	return displayYAML(w, o.Entities)
+	return DisplayYAML(w, o.Entities)
 }
 
 func (o Tasks) header() []string {
@@ -75,7 +75,7 @@ func (o Tasks) TableData(w io.Writer) error {
 			t.LastUpdateTime.String(),
 		}
 	}
-	return displayTable(w, data, o.header())
+	return DisplayTable(w, data, o.header())
 }
 
 func (o Tasks) Text(w io.Writer) error {

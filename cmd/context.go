@@ -15,30 +15,29 @@
 package cmd
 
 import (
-	"github.com/simonfuhrer/nutactl/cmd/displayers"
 	"github.com/spf13/cobra"
 )
 
-func newClusterListCommand(cli *CLI) *cobra.Command {
+func newContextCommand(cli *CLI) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:                   "list [FLAGS]",
-		Short:                 "List clusters",
+		Use:                   "context",
+		Short:                 "Manage contexts",
+		Args:                  cobra.NoArgs,
 		TraverseChildren:      true,
 		DisableFlagsInUseLine: true,
-		PreRunE:               cli.ensureContext,
-		RunE:                  cli.wrap(runClusterList),
+		RunE:                  cli.wrap(runContext),
 	}
-	flags := cmd.Flags()
-	addOutputFormatFlags(flags, "table")
-
+	cmd.AddCommand(
+		newContextListCommand(cli),
+		newContextActiveCommand(cli),
+		newContextUseCommand(cli),
+		newContextCreateCommand(cli),
+		newContextDeleteCommand(cli),
+	)
+	cmd.Flags().SortFlags = false
 	return cmd
 }
 
-func runClusterList(cli *CLI, cmd *cobra.Command, args []string) error {
-	list, err := cli.Client().Cluster.All(cli.Context)
-	if err != nil {
-		return err
-	}
-
-	return outputResponse(displayers.Clusters{ClusterListIntent: *list})
+func runContext(cli *CLI, cmd *cobra.Command, args []string) error {
+	return cmd.Usage()
 }

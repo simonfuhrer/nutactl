@@ -29,19 +29,19 @@ type VirtualDisks struct {
 //var _ Displayable = &VirtualDisks{}
 
 func (o VirtualDisks) JSON(w io.Writer) error {
-	return displayJSON(w, o.Entities)
+	return DisplayJSON(w, o.Entities)
 }
 
 func (o VirtualDisks) JSONPath(w io.Writer, template string) error {
-	return displayJSONPath(w, template, o.Entities)
+	return DisplayJSONPath(w, template, o.Entities)
 }
 
 func (o VirtualDisks) PP(w io.Writer) error {
-	return displayPP(w, o.Entities)
+	return DisplayPP(w, o.Entities)
 }
 
 func (o VirtualDisks) YAML(w io.Writer) error {
-	return displayYAML(w, o.Entities)
+	return DisplayYAML(w, o.Entities)
 }
 
 func (o VirtualDisks) header() []string {
@@ -63,7 +63,7 @@ func (o VirtualDisks) TableData(w io.Writer) error {
 			vmdisk.ClusterUUID,
 		}
 	}
-	return displayTable(w, data, o.header())
+	return DisplayTable(w, data, o.header())
 }
 
 func (o VirtualDisks) Text(w io.Writer) error {

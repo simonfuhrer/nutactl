@@ -29,6 +29,7 @@ func newSubnetListCommand(cli *CLI) *cobra.Command {
 		Short:                 "List subnets",
 		TraverseChildren:      true,
 		DisableFlagsInUseLine: true,
+		PreRunE:               cli.ensureContext,
 		RunE:                  cli.wrap(runSubnetList),
 	}
 	flags := cmd.Flags()

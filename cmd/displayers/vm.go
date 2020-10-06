@@ -31,19 +31,19 @@ type VMs struct {
 //var _ Displayable = &VMs{}
 
 func (o VMs) JSON(w io.Writer) error {
-	return displayJSON(w, o.Entities)
+	return DisplayJSON(w, o.Entities)
 }
 
 func (o VMs) JSONPath(w io.Writer, template string) error {
-	return displayJSONPath(w, template, o.Entities)
+	return DisplayJSONPath(w, template, o.Entities)
 }
 
 func (o VMs) PP(w io.Writer) error {
-	return displayPP(w, o.Entities)
+	return DisplayPP(w, o.Entities)
 }
 
 func (o VMs) YAML(w io.Writer) error {
-	return displayYAML(w, o.Entities)
+	return DisplayYAML(w, o.Entities)
 }
 
 func (o VMs) header() []string {
@@ -87,7 +87,7 @@ func (o VMs) TableData(w io.Writer) error {
 			utils.StringValue(vm.Status.State),
 		}
 	}
-	return displayTable(w, data, o.header())
+	return DisplayTable(w, data, o.header())
 }
 
 func (o VMs) Text(w io.Writer) error {

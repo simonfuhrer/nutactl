@@ -15,37 +15,41 @@
 package cmd
 
 import (
-	"github.com/simonfuhrer/nutactl/cmd/displayers"
+	"fmt"
+
 	"github.com/spf13/cobra"
-	"github.com/tecbiz-ch/nutanix-go-sdk/schema"
+	"github.com/spf13/viper"
 )
 
-func newProjectDescribeCommand(cli *CLI) *cobra.Command {
+func newContextDeleteCommand(cli *CLI) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:                   "describe [FLAGS] PROJECT",
-		Short:                 "Describe an project",
+		Use:                   "delete [FLAGS] CONTEXT",
+		Short:                 "Delete a context",
 		Args:                  cobra.ExactArgs(1),
 		TraverseChildren:      true,
 		DisableFlagsInUseLine: true,
-		PreRunE:               cli.ensureContext,
-		RunE:                  cli.wrap(runProjectDescribe),
+		RunE:                  cli.wrap(runContextDelete),
 	}
-	flags := cmd.Flags()
-	addOutputFormatFlags(flags, "json")
 	return cmd
 }
 
-func runProjectDescribe(cli *CLI, cmd *cobra.Command, args []string) error {
-	idOrName := args[0]
-
-	project, err := cli.Client().Project.Get(cli.Context, idOrName)
+func runContextDelete(cli *CLI, cmd *cobra.Command, args []string) error {
+	name := args[0]
+	context := cli.config.ContextByName(name)
+	if context == nil {
+		return fmt.Errorf("context not found: %v", name)
+	}
+	cli.config.RemoveContext(context)
+	viper.Set("contexts", cli.config.Contexts)
+	activeContext := ""
+	if len(cli.config.Contexts) > 0 {
+		activeContext = cli.config.Contexts[0].Name
+	}
+	viper.Set("active_context", activeContext)
+	err := viper.WriteConfig()
 	if err != nil {
 		return err
 	}
-
-	list := schema.ProjectListIntent{
-		Entities: []*schema.ProjectIntent{project},
-	}
-
-	return outputResponse(displayers.Projects{ProjectListIntent: list})
+	fmt.Printf("Context %v deleted\n", name)
+	return nil
 }
