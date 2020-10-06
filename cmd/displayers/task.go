@@ -28,7 +28,7 @@ type Tasks struct {
 	schema.TaskListIntent
 }
 
-//var _ Displayable = &Tasks{}
+// var _ Displayable = &Tasks{}
 
 func (o Tasks) JSON(w io.Writer) error {
 	return DisplayJSON(w, o.Entities)

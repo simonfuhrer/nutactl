@@ -28,7 +28,7 @@ type VMs struct {
 	schema.VMListIntent
 }
 
-//var _ Displayable = &VMs{}
+// var _ Displayable = &VMs{}
 
 func (o VMs) JSON(w io.Writer) error {
 	return DisplayJSON(w, o.Entities)

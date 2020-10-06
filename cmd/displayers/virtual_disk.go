@@ -26,7 +26,7 @@ type VirtualDisks struct {
 	v2.VirtualDiskList
 }
 
-//var _ Displayable = &VirtualDisks{}
+// var _ Displayable = &VirtualDisks{}
 
 func (o VirtualDisks) JSON(w io.Writer) error {
 	return DisplayJSON(w, o.Entities)

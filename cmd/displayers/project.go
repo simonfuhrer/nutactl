@@ -25,7 +25,7 @@ type Projects struct {
 	schema.ProjectListIntent
 }
 
-//var _ Displayable = &Projects{}
+// var _ Displayable = &Projects{}
 
 func (o Projects) JSON(w io.Writer) error {
 	return DisplayJSON(w, o.Entities)

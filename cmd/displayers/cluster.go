@@ -26,7 +26,7 @@ type Clusters struct {
 	schema.ClusterListIntent
 }
 
-//var _ Displayable = &Clusters{}
+// var _ Displayable = &Clusters{}
 
 func (o Clusters) JSON(w io.Writer) error {
 	return DisplayJSON(w, o.Entities)
