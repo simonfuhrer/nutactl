@@ -17,6 +17,7 @@ package displayers
 import (
 	"io"
 
+	"github.com/dustin/go-humanize"
 	"github.com/tecbiz-ch/nutanix-go-sdk/schema"
 )
 
@@ -48,6 +49,8 @@ func (o Projects) header() []string {
 		"UUID",
 		"Name",
 		"Description",
+		"UpdatedAt",
+		"CreatedAt",
 	}
 }
 
@@ -58,6 +61,8 @@ func (o Projects) TableData(w io.Writer) error {
 			project.Metadata.UUID,
 			project.Spec.Name,
 			project.Spec.Description,
+			humanize.Time(*project.Metadata.LastUpdateTime),
+			humanize.Time(*project.Metadata.CreationTime),
 		}
 	}
 	return DisplayTable(w, data, o.header())
