@@ -33,7 +33,8 @@ func newVMRecoveryPointCreateCommand(cli *CLI) *cobra.Command {
 		RunE:                  cli.wrap(runVMRecoveryPointCreate),
 	}
 
-	cmd.Flags().String("name", "", "VM RecoveryPoint Name ")
+	cmd.Flags().StringP("name", "n", "", "VM RecoveryPoint Name ")
+	_ = cmd.MarkFlagRequired("name")
 	return cmd
 }
 
