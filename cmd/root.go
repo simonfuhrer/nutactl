@@ -52,6 +52,7 @@ func NewRootCommand(cli *CLI) *cobra.Command {
 		newTaskCommand(cli),
 		newVersionCommand(cli),
 		newCompletionCommand(cli),
+		newDocCommand(cli),
 	)
 
 	rootCmd.Flags().SortFlags = false
