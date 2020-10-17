@@ -17,6 +17,7 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"os"
 	"strings"
 	"time"
 
@@ -80,15 +81,20 @@ func (c *CLI) Client() *nutanix.Client {
 			Username: context.User,
 			Password: context.Password,
 		}
+
 		opts := []nutanix.ClientOption{
 			nutanix.WithCredentials(&configCreds),
 			nutanix.WithEndpoint(context.Endpoint),
+		}
+		if viper.GetString("log-level") == "trace" {
+			opts = append(opts, nutanix.WithDebugWriter(os.Stdout))
 		}
 		if viper.GetBool("insecure") {
 			opts = append(opts, nutanix.WithSkipVerify())
 		}
 
 		logrus.Debugf("creating Nutanix Client")
+
 		c.client = nutanix.NewClient(opts...)
 	}
 	return c.client
