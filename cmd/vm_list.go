@@ -18,7 +18,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/prometheus/common/log"
 	"github.com/simonfuhrer/nutactl/cmd/displayers"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -41,14 +40,12 @@ func newVMListCommand(cli *CLI) *cobra.Command {
 	flags := cmd.Flags()
 	flags.StringP("filter", "f", "", "FIQL filter (e.g. vm_name==x3012.*)")
 	flags.StringP("cluster", "c", "", "filter vms by cluster")
-	flags.Int64P("limits", "L", 100, "limit objects")
 	return cmd
 }
 
 func runVMList(cli *CLI, cmd *cobra.Command, args []string) error {
 	filter := viper.GetString("filter")
 	cluster := viper.GetString("cluster")
-	limits := viper.GetInt64("limits")
 
 	var list *schema.VMListIntent
 	var err error
@@ -69,24 +66,17 @@ func runVMList(cli *CLI, cmd *cobra.Command, args []string) error {
 	if len(finalfilter) > 0 {
 		list, err = cli.Client().VM.List(
 			cli.Context,
-			&schema.DSMetadata{Length: utils.Int64Ptr(limits), Offset: utils.Int64Ptr(0), Filter: strings.Join(finalfilter, ";")},
+			&schema.DSMetadata{Offset: utils.Int64Ptr(0), Filter: strings.Join(finalfilter, ";")},
 		)
 		if err != nil {
 			return err
 		}
 	} else {
-		list, err = cli.Client().VM.List(
-			cli.Context,
-			&schema.DSMetadata{Length: utils.Int64Ptr(limits), Offset: utils.Int64Ptr(0), SortAttribute: "_created_timestamp_usecs_", SortOrder: "DESCENDING"},
-		)
+		list, err = cli.Client().VM.All(cli.Context)
 		if err != nil {
 			return err
 		}
 
 	}
-	err = outputResponse(displayers.VMs{VMListIntent: *list})
-	if list.Metadata.TotalMatches > list.Metadata.Length {
-		log.Warnf("Entities found: %d, Total: %d. use --limits=<Integer> to show more Objects or specified a filtercriteria with --filter", list.Metadata.Length, list.Metadata.TotalMatches)
-	}
-	return err
+	return outputResponse(displayers.VMs{VMListIntent: *list})
 }
