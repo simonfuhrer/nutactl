@@ -42,22 +42,31 @@ func newImageListCommand(cli *CLI) *cobra.Command {
 func runImageList(cli *CLI, cmd *cobra.Command, args []string) error {
 	filter := viper.GetString("filter")
 
-	if filter != "" {
-		listfiltered, err := cli.Client().Image.List(
-			cli.Context,
-			&schema.DSMetadata{Length: utils.Int64Ptr(500), Filter: filter},
-		)
+	opts := &schema.DSMetadata{Offset: utils.Int64Ptr(0), Length: utils.Int64Ptr(itemsPerPage)}
+	var list schema.ImageListIntent
 
-		if err != nil {
-			return err
-		}
-		return outputResponse(displayers.Images{ImageListIntent: *listfiltered})
+	if filter != "" {
+		opts.Filter = filter
 	}
 
-	list, err := cli.Client().Image.All(cli.Context)
+	f := func(opts *schema.DSMetadata) (interface{}, error) {
+		list, err := cli.Client().Image.List(
+			cli.Context,
+			opts,
+		)
+		return list, err
+	}
+
+	channelresponse, err := paginateResp(f, opts)
 	if err != nil {
 		return err
 	}
 
-	return outputResponse(displayers.Images{ImageListIntent: *list})
+	for response := range channelresponse {
+		item := response.(*schema.ImageListIntent)
+		list.Entities = append(list.Entities, item.Entities...)
+	}
+
+	return outputResponse(displayers.Images{ImageListIntent: list})
+
 }

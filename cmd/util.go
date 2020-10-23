@@ -19,7 +19,9 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"reflect"
 	"strings"
+	"sync"
 
 	"github.com/fatih/color"
 	"github.com/pkg/errors"
@@ -28,6 +30,8 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
+	"github.com/tecbiz-ch/nutanix-go-sdk/pkg/utils"
+	"github.com/tecbiz-ch/nutanix-go-sdk/schema"
 )
 
 // MarkFlagsRequired ...
@@ -126,4 +130,57 @@ func askForConfirm(message string) error {
 	}
 
 	return nil
+}
+
+type generator func(*schema.DSMetadata) (interface{}, error)
+
+func paginateResp(gen generator, opts *schema.DSMetadata) (chan interface{}, error) {
+	resp, err := gen(opts)
+	if err != nil {
+		return nil, err
+	}
+	var buffer int64
+	buffer = 1
+	v := reflect.ValueOf(resp).Elem().FieldByName("Metadata")
+	metadata := v.Interface().(*schema.ListMetadata)
+
+	var wg sync.WaitGroup
+	if metadata.Length > 0 && metadata.TotalMatches > 0 {
+		buffer = metadata.TotalMatches/metadata.Length + 1
+	}
+	responsechannel := make(chan interface{}, buffer)
+	errorchannel := make(chan error, buffer)
+	responsechannel <- resp
+
+	if metadata.Length < metadata.TotalMatches {
+		var i int64
+		for i = *opts.Length; i < metadata.TotalMatches; i += *opts.Length {
+			wg.Add(1)
+			go func(i int64) {
+				defer wg.Done()
+				pagedopts := *opts
+				pagedopts.Offset = utils.Int64Ptr(i)
+				resp, err := gen(&pagedopts)
+				if err != nil {
+					errorchannel <- err
+				}
+				responsechannel <- resp
+			}(i)
+
+		}
+
+	}
+	go func() {
+		wg.Wait()
+		close(responsechannel)
+		close(errorchannel)
+	}()
+
+	for err := range errorchannel {
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return responsechannel, err
 }

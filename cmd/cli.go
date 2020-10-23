@@ -32,8 +32,9 @@ import (
 
 // PollIntervalinSeconds ..
 const (
-	PollIntervalinSeconds = 2
-	appName               = "NUTACTL"
+	PollIntervalinSeconds       = 2
+	appName                     = "NUTACTL"
+	itemsPerPage          int64 = 40
 )
 
 // CLI ...

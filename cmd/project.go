@@ -52,14 +52,6 @@ func createUpdateProjectHelper(name string, req *schema.ProjectIntent) error {
 	}
 	if len(description) != 0 {
 		req.Spec.Description = description
-		req.Metadata.UseCategoriesMapping = true
-		m := make(map[string][]string)
-		m["BI-ForemanOperatingSystem"] = []string{"Windows_2016"}
-		req.Metadata.CategoriesMapping = nil
-
-		/* 		m := make(map[string]string)
-		   		m["BI-ForemanOperatingSystem"] = "Windows_20162"
-		   		project.Metadata.Categories = m */
 	}
 	return nil
 }

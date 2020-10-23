@@ -19,7 +19,6 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/hokaccha/go-prettyjson"
 	"github.com/k0kubun/pp"
 	"github.com/olekukonko/tablewriter"
 	"github.com/pkg/errors"
@@ -55,11 +54,10 @@ func DisplayYAML(w io.Writer, data interface{}) error {
 }
 
 func DisplayJSON(w io.Writer, data interface{}) error {
-	j, err := prettyjson.Marshal(data)
+	j, err := json.MarshalIndent(data, "", "  ")
 	if err != nil {
 		return errors.Wrap(err, "marshaling to JSON")
 	}
-
 	fmt.Fprintln(w, string(j))
 	return nil
 }
@@ -68,6 +66,13 @@ func DisplayPP(w io.Writer, data interface{}) error {
 	_, err := pp.Println(w, data)
 	if err != nil {
 		return errors.Wrap(err, "marshaling to PP")
+	}
+	return nil
+}
+
+func DisplayText(w io.Writer, data []string) error {
+	for _, line := range data {
+		fmt.Print(line)
 	}
 	return nil
 }

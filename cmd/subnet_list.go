@@ -42,22 +42,27 @@ func newSubnetListCommand(cli *CLI) *cobra.Command {
 func runSubnetList(cli *CLI, cmd *cobra.Command, args []string) error {
 	filter := viper.GetString("filter")
 
+	opts := &schema.DSMetadata{Offset: utils.Int64Ptr(0), Length: utils.Int64Ptr(itemsPerPage)}
+	var list schema.SubnetListIntent
 	if filter != "" {
-		listfiltered, err := cli.Client().Subnet.List(
-			cli.Context,
-			&schema.DSMetadata{Length: utils.Int64Ptr(500), Filter: filter},
-		)
-
-		if err != nil {
-			return err
-		}
-		return outputResponse(displayers.Subnets{SubnetListIntent: *listfiltered})
+		opts.Filter = filter
 	}
 
-	list, err := cli.Client().Subnet.All(cli.Context)
+	f := func(opts *schema.DSMetadata) (interface{}, error) {
+		list, err := cli.Client().Subnet.List(
+			cli.Context,
+			opts,
+		)
+		return list, err
+	}
+	channelresponse, err := paginateResp(f, opts)
 	if err != nil {
 		return err
 	}
+	for response := range channelresponse {
+		item := response.(*schema.SubnetListIntent)
+		list.Entities = append(list.Entities, item.Entities...)
+	}
 
-	return outputResponse(displayers.Subnets{SubnetListIntent: *list})
+	return outputResponse(displayers.Subnets{SubnetListIntent: list})
 }
