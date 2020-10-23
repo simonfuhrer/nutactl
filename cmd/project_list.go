@@ -17,6 +17,8 @@ package cmd
 import (
 	"github.com/simonfuhrer/nutactl/cmd/displayers"
 	"github.com/spf13/cobra"
+	"github.com/tecbiz-ch/nutanix-go-sdk/pkg/utils"
+	"github.com/tecbiz-ch/nutanix-go-sdk/schema"
 )
 
 func newProjectListCommand(cli *CLI) *cobra.Command {
@@ -35,10 +37,24 @@ func newProjectListCommand(cli *CLI) *cobra.Command {
 }
 
 func runProjectList(cli *CLI, cmd *cobra.Command, args []string) error {
-	list, err := cli.Client().Project.All(cli.Context)
+	opts := &schema.DSMetadata{Offset: utils.Int64Ptr(0), Length: utils.Int64Ptr(itemsPerPage)}
+	var list schema.ProjectListIntent
+
+	f := func(opts *schema.DSMetadata) (interface{}, error) {
+		list, err := cli.Client().Project.List(
+			cli.Context,
+			opts,
+		)
+		return list, err
+	}
+	channelresponse, err := paginateResp(f, opts)
 	if err != nil {
 		return err
 	}
+	for response := range channelresponse {
+		item := response.(*schema.ProjectListIntent)
+		list.Entities = append(list.Entities, item.Entities...)
+	}
 
-	return outputResponse(displayers.Projects{ProjectListIntent: *list})
+	return outputResponse(displayers.Projects{ProjectListIntent: list})
 }

@@ -97,5 +97,13 @@ func (o VMs) TableData(w io.Writer) error {
 }
 
 func (o VMs) Text(w io.Writer) error {
-	return nil
+	var data []string
+	for _, vm := range o.Entities {
+		data = append(data, "------\n")
+		data = append(data, fmt.Sprintf("UUID:\t\t%s\n", vm.Metadata.UUID))
+		data = append(data, fmt.Sprintf("Name:\t\t%s\n", vm.Spec.Name))
+		data = append(data, fmt.Sprintf("PowerState:\t\t%s\n", vm.Spec.Resources.PowerState))
+		data = append(data, "------\n\n")
+	}
+	return DisplayText(w, data)
 }

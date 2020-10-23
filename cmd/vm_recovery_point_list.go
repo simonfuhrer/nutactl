@@ -19,6 +19,7 @@ import (
 
 	"github.com/simonfuhrer/nutactl/cmd/displayers"
 	"github.com/spf13/cobra"
+	"github.com/tecbiz-ch/nutanix-go-sdk/pkg/utils"
 	"github.com/tecbiz-ch/nutanix-go-sdk/schema"
 )
 
@@ -37,8 +38,9 @@ func newVMRecoveryPointListCommand(cli *CLI) *cobra.Command {
 }
 
 func runVMRecoveryPointList(cli *CLI, cmd *cobra.Command, args []string) error {
-	var list *schema.VMRecoveryPointListIntent
+	var list schema.VMRecoveryPointListIntent
 	var err error
+	opts := &schema.DSMetadata{Offset: utils.Int64Ptr(0), Length: utils.Int64Ptr(itemsPerPage)}
 
 	if len(args) > 0 {
 		vmUUIDOrName := args[0]
@@ -46,16 +48,24 @@ func runVMRecoveryPointList(cli *CLI, cmd *cobra.Command, args []string) error {
 		if err != nil {
 			return err
 		}
-		opts := &schema.DSMetadata{Filter: fmt.Sprintf("entity_name==%s", vm.Spec.Name)}
-		list, err = cli.Client().VMRecoveryPoint.List(cli.Context, opts)
-		if err != nil {
-			return err
-		}
-	} else {
-		list, err = cli.Client().VMRecoveryPoint.All(cli.Context)
-		if err != nil {
-			return err
-		}
+		opts.Filter = fmt.Sprintf("entity_name==%s", vm.Spec.Name)
+
+	}
+
+	f := func(opts *schema.DSMetadata) (interface{}, error) {
+		list, err := cli.Client().VMRecoveryPoint.List(
+			cli.Context,
+			opts,
+		)
+		return list, err
+	}
+	channelresponse, err := paginateResp(f, opts)
+	if err != nil {
+		return err
+	}
+	for response := range channelresponse {
+		item := response.(*schema.VMRecoveryPointListIntent)
+		list.Entities = append(list.Entities, item.Entities...)
 	}
 
 	for _, vol := range list.Entities {
@@ -66,5 +76,5 @@ func runVMRecoveryPointList(cli *CLI, cmd *cobra.Command, args []string) error {
 			}
 		}
 	}
-	return outputResponse(displayers.VMRecoveryPoints{VMRecoveryPointListIntent: *list})
+	return outputResponse(displayers.VMRecoveryPoints{VMRecoveryPointListIntent: list})
 }

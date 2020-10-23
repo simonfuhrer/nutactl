@@ -38,7 +38,7 @@ func newVMListCommand(cli *CLI) *cobra.Command {
 	}
 	addOutputFormatFlags(cmd.Flags(), "table")
 	flags := cmd.Flags()
-	flags.StringP("filter", "f", "", "FIQL filter (e.g. vm_name==x3012.*)")
+	flags.StringP("filter", "f", "", "FIQL filter (e.g. vm_name==srv.*)")
 	flags.StringP("cluster", "c", "", "filter vms by cluster")
 	return cmd
 }
@@ -47,8 +47,9 @@ func runVMList(cli *CLI, cmd *cobra.Command, args []string) error {
 	filter := viper.GetString("filter")
 	cluster := viper.GetString("cluster")
 
-	var list *schema.VMListIntent
+	var list schema.VMListIntent
 	var err error
+	opts := &schema.DSMetadata{Offset: utils.Int64Ptr(0), Length: utils.Int64Ptr(itemsPerPage)}
 
 	var finalfilter []string
 	if filter != "" {
@@ -64,19 +65,24 @@ func runVMList(cli *CLI, cmd *cobra.Command, args []string) error {
 	}
 
 	if len(finalfilter) > 0 {
-		list, err = cli.Client().VM.List(
-			cli.Context,
-			&schema.DSMetadata{Offset: utils.Int64Ptr(0), Filter: strings.Join(finalfilter, ";")},
-		)
-		if err != nil {
-			return err
-		}
-	} else {
-		list, err = cli.Client().VM.All(cli.Context)
-		if err != nil {
-			return err
-		}
-
+		opts.Filter = strings.Join(finalfilter, ";")
 	}
-	return outputResponse(displayers.VMs{VMListIntent: *list})
+
+	f := func(opts *schema.DSMetadata) (interface{}, error) {
+		list, err := cli.Client().VM.List(
+			cli.Context,
+			opts,
+		)
+		return list, err
+	}
+	channelresponse, err := paginateResp(f, opts)
+	if err != nil {
+		return err
+	}
+	for response := range channelresponse {
+		item := response.(*schema.VMListIntent)
+		list.Entities = append(list.Entities, item.Entities...)
+	}
+
+	return outputResponse(displayers.VMs{VMListIntent: list})
 }
