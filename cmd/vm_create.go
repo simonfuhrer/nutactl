@@ -64,10 +64,6 @@ func runVMCreate(cli *CLI, cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("both image and vm provided")
 	}
 
-	if len(imageIdorName) == 0 && len(vmIdorName) == 0 {
-		return fmt.Errorf("both image and vm are missing")
-	}
-
 	vmexists, err := cli.Client().VM.Get(cli.Context, name)
 	if err != nil && !strings.Contains(err.Error(), "not found") {
 		return err
@@ -144,6 +140,11 @@ func runVMCreate(cli *CLI, cmd *cobra.Command, args []string) error {
 			Kind: "vm",
 			UUID: vm.Metadata.UUID,
 		}
+	}
+
+	if len(imageIdorName) == 0 && len(vmIdorName) == 0 && req.Spec.Resources.DiskList[0].DiskSizeMib == 0 {
+		// size is a required field if a blank vm is created
+		req.Spec.Resources.DiskList[0].DiskSizeMib = 1000
 	}
 
 	if len(userDataFileName) != 0 {

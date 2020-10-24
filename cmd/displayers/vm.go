@@ -58,6 +58,7 @@ func (o VMs) header() []string {
 		"Cluster",
 		"MiB",
 		"CPU",
+		"Disks",
 		"Status",
 		"UpdatedAt",
 		"CreatedAt",

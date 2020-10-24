@@ -6,6 +6,7 @@ func newAvailabilityZoneCommand(cli *CLI) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:                   "availabilityzone",
 		Short:                 "Manage availability zones",
+		Aliases:               []string{"a", "avz"},
 		Args:                  cobra.NoArgs,
 		TraverseChildren:      true,
 		DisableFlagsInUseLine: true,

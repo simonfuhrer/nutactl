@@ -51,12 +51,11 @@ func (o Subnets) header() []string {
 	return []string{
 		"UUID",
 		"Name",
-		"Description",
 		"Cluster",
-		"Type",
 		"VLAN",
-		"SubnetIP",
-		"DHCPPOOL",
+		"Subnet",
+		"Gateway",
+		"DHCP Pool",
 		"Status",
 		"UpdatedAt",
 		"CreatedAt",
@@ -68,8 +67,10 @@ func (o Subnets) TableData(w io.Writer) error {
 	for i, subnet := range o.Entities {
 		subnetIP := ""
 		dhcpPool := ""
+		gw := ""
 		if subnet.Spec.Resources.IPConfig != nil {
 			subnetIP = fmt.Sprintf("%s/%d", subnet.Spec.Resources.IPConfig.SubnetIP, subnet.Spec.Resources.IPConfig.PrefixLength)
+			gw = subnet.Spec.Resources.IPConfig.DefaultGatewayIP
 			if subnet.Spec.Resources.IPConfig.PoolList != nil {
 				strs := make([]string, len(subnet.Spec.Resources.IPConfig.PoolList))
 				for i, v := range subnet.Spec.Resources.IPConfig.PoolList {
@@ -82,11 +83,10 @@ func (o Subnets) TableData(w io.Writer) error {
 		data[i] = []string{
 			subnet.Metadata.UUID,
 			subnet.Spec.Name,
-			subnet.Spec.Description,
 			subnet.Spec.ClusterReference.Name,
-			subnet.Spec.Resources.SubnetType,
 			strconv.FormatInt(*subnet.Spec.Resources.VlanID, 10),
 			subnetIP,
+			gw,
 			dhcpPool,
 			subnet.Status.State,
 			humanize.Time(*subnet.Metadata.LastUpdateTime),

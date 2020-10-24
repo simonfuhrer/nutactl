@@ -29,6 +29,7 @@ func newSubnetCommand(cli *CLI) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:                   "subnet",
 		Short:                 "Manage subnets",
+		Aliases:               []string{"s", "sub"},
 		Args:                  cobra.NoArgs,
 		TraverseChildren:      true,
 		DisableFlagsInUseLine: true,

@@ -16,11 +16,16 @@ package cmd
 
 import (
 	"io"
+	"os/user"
+	"path/filepath"
 
 	"github.com/simonfuhrer/nutactl/cmd/displayers"
 )
 
+var DefaultConfigPath string
+
 type Config struct {
+	Insecure      bool       `mapstructure:"insecure"`
 	Contexts      []*Context `mapstructure:"contexts"`
 	ActiveContext string     `mapstructure:"active_context"`
 }
@@ -30,6 +35,16 @@ type Context struct {
 	Endpoint string `mapstructure:"endpoint"`
 	Password string `mapstructure:"password"`
 	User     string `mapstructure:"user"`
+}
+
+func init() {
+	usr, err := user.Current()
+	if err != nil {
+		return
+	}
+	if usr.HomeDir != "" {
+		DefaultConfigPath = filepath.Join(usr.HomeDir)
+	}
 }
 
 func (o Config) JSON(w io.Writer) error {

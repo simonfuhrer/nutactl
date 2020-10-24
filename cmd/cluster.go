@@ -20,6 +20,7 @@ func newClusterCommand(cli *CLI) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:                   "cluster",
 		Short:                 "Manage cluster",
+		Aliases:               []string{"c", "clu"},
 		Args:                  cobra.NoArgs,
 		TraverseChildren:      true,
 		DisableFlagsInUseLine: true,

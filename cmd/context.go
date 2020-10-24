@@ -15,12 +15,17 @@
 package cmd
 
 import (
+	"os"
+
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+	"github.com/tcnksm/go-input"
 )
 
 func newContextCommand(cli *CLI) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:                   "context",
+		Aliases:               []string{"con", "co"},
 		Short:                 "Manage contexts",
 		Args:                  cobra.NoArgs,
 		TraverseChildren:      true,
@@ -40,4 +45,49 @@ func newContextCommand(cli *CLI) *cobra.Command {
 
 func runContext(cli *CLI, cmd *cobra.Command, args []string) error {
 	return cmd.Usage()
+}
+
+func createContext(newcontext *Context, contexts []*Context) error {
+	ui := &input.UI{
+		Writer: os.Stdout,
+		Reader: os.Stdin,
+	}
+
+	endpoint, err := ui.Ask("Enter Prismcentral (PC) Endpoint", &input.Options{
+		Default:   "",
+		Required:  true,
+		Loop:      true,
+		HideOrder: true,
+	})
+	if err != nil {
+		return err
+	}
+	newcontext.Endpoint = endpoint
+
+	username, err := ui.Ask("Username", &input.Options{
+		Default:   "admin",
+		Required:  true,
+		Loop:      true,
+		HideOrder: true,
+	})
+	if err != nil {
+		return err
+	}
+	newcontext.User = username
+
+	password, err := ui.Ask("Password", &input.Options{
+		Default:   "",
+		Required:  true,
+		Mask:      true,
+		Loop:      true,
+		HideOrder: true,
+	})
+	if err != nil {
+		return err
+	}
+	newcontext.Password = password
+	contexts = append(contexts, newcontext)
+	viper.Set("contexts", contexts)
+	viper.Set("active_context", newcontext.Name)
+	return viper.WriteConfig()
 }
