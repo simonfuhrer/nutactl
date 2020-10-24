@@ -20,6 +20,7 @@ import (
 	"io"
 	"os"
 	"reflect"
+	"regexp"
 	"strings"
 	"sync"
 
@@ -55,8 +56,8 @@ func addOutputFormatFlags(flags *pflag.FlagSet, defaultformat string) {
 
 // BindAllFlags ...
 func BindAllFlags(cmd *cobra.Command) {
-	_ = viper.BindPFlags(cmd.Flags())
 	_ = viper.BindPFlags(cmd.PersistentFlags())
+	_ = viper.BindPFlags(cmd.Flags())
 }
 
 func checkErr(err error) error {
@@ -183,4 +184,17 @@ func paginateResp(gen generator, opts *schema.DSMetadata) (chan interface{}, err
 	}
 
 	return responsechannel, err
+}
+
+func fileExists(filename string) bool {
+	info, err := os.Stat(filename)
+	if os.IsNotExist(err) {
+		return false
+	}
+	return !info.IsDir()
+}
+
+func isValidUUID(uuid string) bool {
+	r := regexp.MustCompile("^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-4[a-fA-F0-9]{3}-[8|9|aA|bB][a-fA-F0-9]{3}-[a-fA-F0-9]{12}$")
+	return r.MatchString(uuid)
 }

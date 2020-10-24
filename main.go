@@ -21,11 +21,10 @@ import (
 )
 
 func main() {
-	c := cmd.NewCLI()
+	c := cmd.NewCLI(false)
 	cobra.EnableCommandSorting = false
 	cobra.EnablePrefixMatching = false
 	if err := c.RootCommand.Execute(); err != nil {
 		logrus.Errorf("error: %s", err.Error())
-
 	}
 }

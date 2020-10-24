@@ -14,27 +14,26 @@
 
 package cmd
 
-import "github.com/spf13/cobra"
+import (
+	"github.com/spf13/cobra"
+)
 
-func newTaskCommand(cli *CLI) *cobra.Command {
+func newHostCommand(cli *CLI) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:                   "task",
-		Short:                 "Manage tasks",
-		Aliases:               []string{"t", "tas"},
+		Use:                   "host",
+		Short:                 "Manage hosts",
 		Args:                  cobra.NoArgs,
 		TraverseChildren:      true,
 		DisableFlagsInUseLine: true,
-		RunE:                  cli.wrap(runTask),
+		RunE:                  cli.wrap(runHost),
 	}
-
 	cmd.AddCommand(
-		newTaskListCommand(cli),
-		newTaskDescribeCommand(cli),
-		newTaskDeleteCommand(cli),
+		newHostListCommand(cli),
+		newHostDescribeCommand(cli),
 	)
 	return cmd
 }
 
-func runTask(cli *CLI, cmd *cobra.Command, args []string) error {
+func runHost(cli *CLI, cmd *cobra.Command, args []string) error {
 	return cmd.Usage()
 }

@@ -25,6 +25,7 @@ func newProjectCommand(cli *CLI) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:                   "project",
 		Short:                 "Manage projects",
+		Aliases:               []string{"p", "pro"},
 		Args:                  cobra.NoArgs,
 		TraverseChildren:      true,
 		DisableFlagsInUseLine: true,

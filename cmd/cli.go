@@ -18,11 +18,13 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"path"
 	"strings"
 	"time"
 
 	"github.com/briandowns/spinner"
 	logrus "github.com/sirupsen/logrus"
+	"github.com/tcnksm/go-input"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -44,20 +46,20 @@ type CLI struct {
 	RootCommand         *cobra.Command
 	client              *nutanix.Client
 	millisecondsPerPoll time.Duration
-	clusters            map[string]string
 	config              *Config
+	Plugin              bool
 }
 
 // NewCLI ...
-func NewCLI() *CLI {
+func NewCLI(plugin bool) *CLI {
 	viper.SetEnvPrefix(appName)
 	viper.AutomaticEnv()
 	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_", ".", "_"))
 	viper.SetConfigType("yaml")
-	initConfig()
 	cli := &CLI{
 		Context:             context.Background(),
 		millisecondsPerPoll: 1000 * PollIntervalinSeconds,
+		Plugin:              plugin,
 	}
 	cli.RootCommand = NewRootCommand(cli)
 
@@ -101,30 +103,6 @@ func (c *CLI) Client() *nutanix.Client {
 	return c.client
 }
 
-func (c *CLI) ensureContext(cmd *cobra.Command, args []string) error {
-	if c.config.ActiveContext == "" || c.config.ContextByName(c.config.ActiveContext) == nil {
-		return fmt.Errorf("no active context or context does not exists")
-	}
-	return nil
-}
-
-// InitAllClusters ...
-func (c *CLI) InitAllClusters() error {
-	logrus.Debugf("init Nutanix Clusters")
-	if c.clusters == nil {
-		clusters, err := c.client.Cluster.All(context.Background())
-		if err != nil {
-			return err
-		}
-		data := make(map[string]string)
-		for _, cluster := range clusters.Entities {
-			data[cluster.Metadata.UUID] = cluster.Spec.Name
-		}
-		c.clusters = data
-	}
-	return nil
-}
-
 // WaitTask ...
 func (c *CLI) WaitTask(ctx context.Context, taskUUID string, timeoutSeconds int) error {
 	ctx, cancel := context.WithTimeout(ctx, time.Duration(timeoutSeconds)*time.Second)
@@ -157,4 +135,87 @@ func (c *CLI) WaitTask(ctx context.Context, taskUUID string, timeoutSeconds int)
 			return fmt.Errorf("error waiting for task to be completed: %s", ctx.Err())
 		}
 	}
+}
+
+func (c *CLI) ensureContext(cmd *cobra.Command, args []string) error {
+	context := c.config.ContextByName(c.config.ActiveContext)
+	if c.config.ActiveContext == "" || context == nil {
+		if context == nil {
+			ui := &input.UI{
+				Writer: os.Stdout,
+				Reader: os.Stdin,
+			}
+
+			contextname, err := ui.Ask("Enter context name", &input.Options{
+				Default:   "",
+				Required:  true,
+				Loop:      true,
+				HideOrder: true,
+			})
+			if err != nil {
+				logrus.Fatalln(err.Error())
+			}
+
+			newcontext := &Context{Name: contextname}
+			err = createContext(newcontext, c.config.Contexts)
+			if err != nil {
+				return err
+			}
+
+			context = newcontext
+		}
+	}
+
+	if context.Endpoint == "" {
+		return fmt.Errorf("missing endpoint in config %s", viper.ConfigFileUsed())
+	}
+	if context.User == "" {
+		return fmt.Errorf("missing user in config %s", viper.ConfigFileUsed())
+	}
+	if context.Password == "" {
+		return fmt.Errorf("missing password in config %s", viper.ConfigFileUsed())
+	}
+
+	return nil
+}
+
+func (c *CLI) ReadConfig() {
+	cfgLogJSON := viper.GetBool("log-json")
+	if cfgLogJSON {
+		logrus.SetFormatter(&logrus.JSONFormatter{})
+	}
+
+	cfgLogLevel := viper.GetString("log-level")
+	logrusLogLevel, err := logrus.ParseLevel(cfgLogLevel)
+	if err == nil {
+		logrus.SetLevel(logrusLogLevel)
+	}
+	logrus.Debugf("logger initialized: loglevel %s", cfgLogLevel)
+	cfgFile := viper.GetString("config")
+	if cfgFile != "" {
+		dir, file := path.Split(cfgFile)
+		viper.AddConfigPath(dir)
+		viper.SetConfigName(file)
+	} else {
+		// Search config in home directory with name ".nutactl" (without extension).
+		viper.AddConfigPath(DefaultConfigPath)
+		viper.SetConfigName(".nutactl")
+	}
+
+	// If a config file is found, read it in.
+	if err := viper.ReadInConfig(); err == nil {
+		logrus.Debug("Using config file: ", viper.ConfigFileUsed())
+	}
+
+	if !fileExists(viper.ConfigFileUsed()) {
+		err := viper.SafeWriteConfig()
+		if err != nil {
+			logrus.Fatalf("%s", err)
+		}
+	}
+	err = viper.Unmarshal(&c.config)
+	if err != nil {
+		fmt.Printf("unable to decode into config struct, %v", err)
+	}
+
 }

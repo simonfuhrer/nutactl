@@ -15,37 +15,38 @@
 package cmd
 
 import (
-	"fmt"
-	"strings"
-
+	"github.com/simonfuhrer/nutactl/cmd/displayers"
 	"github.com/spf13/cobra"
+	"github.com/tecbiz-ch/nutanix-go-sdk/schema"
 )
 
-func newContextCreateCommand(cli *CLI) *cobra.Command {
+func newHostDescribeCommand(cli *CLI) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:                   "create [FLAGS] NAME",
-		Short:                 "create a context",
+		Use:                   "describe [FLAGS] HOST",
+		Short:                 "Describe a host",
+		Aliases:               []string{"d", "des"},
 		Args:                  cobra.ExactArgs(1),
 		TraverseChildren:      true,
 		DisableFlagsInUseLine: true,
-		RunE:                  cli.wrap(runContextCreate),
+		PreRunE:               cli.ensureContext,
+		RunE:                  cli.wrap(runHostDescribe),
 	}
+	flags := cmd.Flags()
+	addOutputFormatFlags(flags, "json")
 	return cmd
 }
 
-func runContextCreate(cli *CLI, cmd *cobra.Command, args []string) error {
-	name := strings.TrimSpace(args[0])
-	if name == "" {
-		return fmt.Errorf("emtpy name not allowed")
-	}
-	if cli.config.ContextByName(name) != nil {
-		return fmt.Errorf("name %s already used", name)
-	}
-	context := &Context{Name: name}
-	err := createContext(context, cli.config.Contexts)
+func runHostDescribe(cli *CLI, cmd *cobra.Command, args []string) error {
+	idOrName := args[0]
+
+	host, err := cli.Client().Host.Get(cli.Context, idOrName)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("Context %s created and activated\n", name)
-	return nil
+
+	hostList := schema.HostListIntent{
+		Entities: []*schema.HostIntent{host},
+	}
+
+	return outputResponse(displayers.Hosts{HostListIntent: hostList})
 }

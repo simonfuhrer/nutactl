@@ -25,6 +25,7 @@ func newImageCommand(cli *CLI) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:                   "image",
 		Short:                 "Manage images",
+		Aliases:               []string{"i", "img", "ima"},
 		Args:                  cobra.NoArgs,
 		TraverseChildren:      true,
 		DisableFlagsInUseLine: true,

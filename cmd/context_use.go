@@ -40,5 +40,10 @@ func runContextUse(cli *CLI, cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("context not found: %v", name)
 	}
 	viper.Set("active_context", name)
-	return viper.WriteConfig()
+	err := viper.WriteConfig()
+	if err != nil {
+		return err
+	}
+	fmt.Printf("context %s activated\n", name)
+	return nil
 }
