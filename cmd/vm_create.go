@@ -43,6 +43,7 @@ func newVMCreateCommand(cli *CLI) *cobra.Command {
 	flags.String("image", "", "Image Name or UUID")
 	flags.String("vm", "", "VM Name or UUID")
 	flags.Bool("start-after-create", false, "Start VM right after creation")
+	flags.IntSlice("volume", nil, "additional volume to be created in GB (can be specified multiple times)")
 	flags.String("user-data", "", "Read user data from specified file")
 	_ = cmd.MarkFlagFilename("user-data")
 	MarkFlagsRequired(cmd, "cluster")
@@ -56,9 +57,9 @@ func runVMCreate(cli *CLI, cmd *cobra.Command, args []string) error {
 	vmIdorName := viper.GetString("vm")
 	clusterIdorName := viper.GetString("cluster")
 	imageIdorName := viper.GetString("image")
-
 	startVM := viper.GetBool("start-after-create")
 	userDataFileName := viper.GetString("user-data")
+	volumes := viper.GetIntSlice("volume")
 
 	if len(imageIdorName) > 0 && len(vmIdorName) > 0 {
 		return fmt.Errorf("both image and vm provided")
@@ -91,7 +92,7 @@ func runVMCreate(cli *CLI, cmd *cobra.Command, args []string) error {
 						DeviceProperties: &schema.VMDiskDeviceProperties{
 							DeviceType: "DISK",
 							DiskAddress: &schema.DiskAddress{
-								//DeviceIndex: 0,
+								DeviceIndex: 0,
 								AdapterType: "SCSI",
 							},
 						},
@@ -168,6 +169,22 @@ func runVMCreate(cli *CLI, cmd *cobra.Command, args []string) error {
 			},
 		}
 		req.Spec.Resources.GuestCustomization = guestCustomization
+	}
+
+	if len(volumes) > 0 {
+		for index, volSize := range volumes {
+			disk := &schema.VMDisk{
+				DeviceProperties: &schema.VMDiskDeviceProperties{
+					DeviceType: "DISK",
+					DiskAddress: &schema.DiskAddress{
+						DeviceIndex: int64(index + 1),
+						AdapterType: "SCSI",
+					},
+				},
+				DiskSizeMib: int64(volSize * 1024),
+			}
+			req.Spec.Resources.DiskList = append(req.Spec.Resources.DiskList, disk)
+		}
 	}
 
 	result, err := cli.Client().VM.Create(cli.Context, req)
