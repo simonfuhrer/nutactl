@@ -135,55 +135,69 @@ func askForConfirm(message string) error {
 
 type generator func(*schema.DSMetadata) (interface{}, error)
 
-func paginateResp(gen generator, opts *schema.DSMetadata) (chan interface{}, error) {
+type paginatedList struct {
+	list []interface{}
+	mu   sync.Mutex
+}
+
+func (pl *paginatedList) append(items ...interface{}) {
+	pl.mu.Lock()
+	defer pl.mu.Unlock()
+
+	pl.list = append(pl.list, items...)
+}
+
+func paginateResp(gen generator, opts *schema.DSMetadata) ([]interface{}, error) {
+	pagedList := paginatedList{}
+
+	getpage := func(opt *schema.DSMetadata) (interface{}, error) {
+		resp, err := gen(opt)
+		if err != nil {
+			return nil, err
+		}
+		return resp, nil
+	}
+
+	maxJob := 20
+	workerChan := make(chan *schema.DSMetadata, maxJob)
+	var wg sync.WaitGroup
+	for i := 0; i < maxJob-1; i++ {
+		wg.Add(1)
+		go func() {
+			for page := range workerChan {
+				items, err := getpage(page)
+				if err == nil {
+					pagedList.append(items)
+				}
+			}
+			wg.Done()
+		}()
+	}
+
+	// get first page
 	resp, err := gen(opts)
 	if err != nil {
 		return nil, err
 	}
-	var buffer int64
-	buffer = 1
+
+	pagedList.append(resp)
 	v := reflect.ValueOf(resp).Elem().FieldByName("Metadata")
 	metadata := v.Interface().(*schema.ListMetadata)
-
-	var wg sync.WaitGroup
-	if metadata.Length > 0 && metadata.TotalMatches > 0 {
-		buffer = metadata.TotalMatches/metadata.Length + 1
-	}
-	responsechannel := make(chan interface{}, buffer)
-	errorchannel := make(chan error, buffer)
-	responsechannel <- resp
 
 	if metadata.Length < metadata.TotalMatches {
 		var i int64
 		for i = *opts.Length; i < metadata.TotalMatches; i += *opts.Length {
-			wg.Add(1)
-			go func(i int64) {
-				defer wg.Done()
-				pagedopts := *opts
-				pagedopts.Offset = utils.Int64Ptr(i)
-				resp, err := gen(&pagedopts)
-				if err != nil {
-					errorchannel <- err
-				}
-				responsechannel <- resp
-			}(i)
+			pagedopts := *opts
+			pagedopts.Offset = utils.Int64Ptr(i)
+			workerChan <- &pagedopts
 
-		}
-
-	}
-	go func() {
-		wg.Wait()
-		close(responsechannel)
-		close(errorchannel)
-	}()
-
-	for err := range errorchannel {
-		if err != nil {
-			return nil, err
 		}
 	}
 
-	return responsechannel, err
+	close(workerChan)
+	wg.Wait()
+
+	return pagedList.list, nil
 }
 
 func fileExists(filename string) bool {

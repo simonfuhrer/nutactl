@@ -1,15 +1,15 @@
-## nutactl category delete
+## nutactl host
 
-Delete a Category
+Manage hosts
 
 ```
-nutactl category delete [FLAGS] CATEGORY
+nutactl host
 ```
 
 ### Options
 
 ```
-  -h, --help   help for delete
+  -h, --help   help for host
 ```
 
 ### Options inherited from parent commands
@@ -23,5 +23,7 @@ nutactl category delete [FLAGS] CATEGORY
 
 ### SEE ALSO
 
-* [nutactl category](nutactl_category.md)	 - Manage categories
+* [nutactl](nutactl.md)	 - nutanix prism central CLI
+* [nutactl host describe](nutactl_host_describe.md)	 - Describe a host
+* [nutactl host list](nutactl_host_list.md)	 - List hosts
 

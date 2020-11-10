@@ -27,6 +27,7 @@ func newProjectListCommand(cli *CLI) *cobra.Command {
 		Short:                 "List projects",
 		TraverseChildren:      true,
 		DisableFlagsInUseLine: true,
+		DisableAutoGenTag:     true,
 		PreRunE:               cli.ensureContext,
 		RunE:                  cli.wrap(runProjectList),
 	}
@@ -47,11 +48,11 @@ func runProjectList(cli *CLI, cmd *cobra.Command, args []string) error {
 		)
 		return list, err
 	}
-	channelresponse, err := paginateResp(f, opts)
+	responses, err := paginateResp(f, opts)
 	if err != nil {
 		return err
 	}
-	for response := range channelresponse {
+	for _, response := range responses {
 		item := response.(*schema.ProjectListIntent)
 		list.Entities = append(list.Entities, item.Entities...)
 	}

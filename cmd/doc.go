@@ -27,6 +27,7 @@ func newDocCommand(cli *CLI) *cobra.Command {
 		Args:                  cobra.ExactValidArgs(1),
 		TraverseChildren:      true,
 		DisableFlagsInUseLine: true,
+		DisableAutoGenTag:     true,
 		Hidden:                true,
 		RunE:                  cli.wrap(runDoc),
 	}

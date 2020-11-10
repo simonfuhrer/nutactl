@@ -179,7 +179,7 @@ func (c *CLI) ensureContext(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-func (c *CLI) ReadConfig() {
+func (c *CLI) readConfig() {
 	cfgLogJSON := viper.GetBool("log-json")
 	if cfgLogJSON {
 		logrus.SetFormatter(&logrus.JSONFormatter{})

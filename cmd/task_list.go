@@ -27,6 +27,7 @@ func newTaskListCommand(cli *CLI) *cobra.Command {
 		Short:                 "List tasks",
 		TraverseChildren:      true,
 		DisableFlagsInUseLine: true,
+		DisableAutoGenTag:     true,
 		PreRunE:               cli.ensureContext,
 		RunE:                  cli.wrap(runTaskList),
 	}
@@ -36,7 +37,7 @@ func newTaskListCommand(cli *CLI) *cobra.Command {
 }
 
 func runTaskList(cli *CLI, cmd *cobra.Command, args []string) error {
-	opts := &schema.DSMetadata{Offset: utils.Int64Ptr(0), Length: utils.Int64Ptr(400)}
+	opts := &schema.DSMetadata{Offset: utils.Int64Ptr(0), Length: utils.Int64Ptr(200)}
 	var list schema.TaskListIntent
 
 	f := func(opts *schema.DSMetadata) (interface{}, error) {
@@ -46,11 +47,11 @@ func runTaskList(cli *CLI, cmd *cobra.Command, args []string) error {
 		)
 		return list, err
 	}
-	channelresponse, err := paginateResp(f, opts)
+	responses, err := paginateResp(f, opts)
 	if err != nil {
 		return err
 	}
-	for response := range channelresponse {
+	for _, response := range responses {
 		item := response.(*schema.TaskListIntent)
 		list.Entities = append(list.Entities, item.Entities...)
 	}

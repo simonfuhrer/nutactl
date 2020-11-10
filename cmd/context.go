@@ -30,6 +30,7 @@ func newContextCommand(cli *CLI) *cobra.Command {
 		Args:                  cobra.NoArgs,
 		TraverseChildren:      true,
 		DisableFlagsInUseLine: true,
+		DisableAutoGenTag:     true,
 		RunE:                  cli.wrap(runContext),
 	}
 	cmd.AddCommand(

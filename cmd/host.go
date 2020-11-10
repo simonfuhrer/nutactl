@@ -25,6 +25,7 @@ func newHostCommand(cli *CLI) *cobra.Command {
 		Args:                  cobra.NoArgs,
 		TraverseChildren:      true,
 		DisableFlagsInUseLine: true,
+		DisableAutoGenTag:     true,
 		RunE:                  cli.wrap(runHost),
 	}
 	cmd.AddCommand(

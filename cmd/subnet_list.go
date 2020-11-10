@@ -29,6 +29,7 @@ func newSubnetListCommand(cli *CLI) *cobra.Command {
 		Short:                 "List subnets",
 		TraverseChildren:      true,
 		DisableFlagsInUseLine: true,
+		DisableAutoGenTag:     true,
 		PreRunE:               cli.ensureContext,
 		RunE:                  cli.wrap(runSubnetList),
 	}
@@ -55,11 +56,11 @@ func runSubnetList(cli *CLI, cmd *cobra.Command, args []string) error {
 		)
 		return list, err
 	}
-	channelresponse, err := paginateResp(f, opts)
+	responses, err := paginateResp(f, opts)
 	if err != nil {
 		return err
 	}
-	for response := range channelresponse {
+	for _, response := range responses {
 		item := response.(*schema.SubnetListIntent)
 		list.Entities = append(list.Entities, item.Entities...)
 	}

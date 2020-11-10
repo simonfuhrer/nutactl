@@ -32,6 +32,7 @@ func newVMCommand(cli *CLI) *cobra.Command {
 		Args:                  cobra.NoArgs,
 		TraverseChildren:      true,
 		DisableFlagsInUseLine: true,
+		DisableAutoGenTag:     true,
 		RunE:                  cli.wrap(runVM),
 	}
 	cmd.AddCommand(

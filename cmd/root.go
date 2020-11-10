@@ -26,12 +26,13 @@ var rootCmd = &cobra.Command{
 	TraverseChildren:      false,
 	SilenceUsage:          false,
 	SilenceErrors:         true,
+	DisableAutoGenTag:     true,
 	DisableFlagsInUseLine: true,
 }
 
 // NewRootCommand ...
 func NewRootCommand(cli *CLI) *cobra.Command {
-	cobra.OnInitialize(cli.ReadConfig)
+	cobra.OnInitialize(cli.readConfig)
 
 	rootCmd.AddCommand(
 		newVMCommand(cli),
