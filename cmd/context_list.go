@@ -25,6 +25,7 @@ func newContextListCommand(cli *CLI) *cobra.Command {
 		Short:                 "List contexts",
 		TraverseChildren:      true,
 		DisableFlagsInUseLine: true,
+		DisableAutoGenTag:     true,
 		RunE:                  cli.wrap(runContextList),
 	}
 	flags := cmd.Flags()

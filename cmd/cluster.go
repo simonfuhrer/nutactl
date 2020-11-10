@@ -24,6 +24,7 @@ func newClusterCommand(cli *CLI) *cobra.Command {
 		Args:                  cobra.NoArgs,
 		TraverseChildren:      true,
 		DisableFlagsInUseLine: true,
+		DisableAutoGenTag:     true,
 		RunE:                  cli.wrap(runCluster),
 	}
 	cmd.AddCommand(

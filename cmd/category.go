@@ -23,6 +23,7 @@ func newCategoryCommand(cli *CLI) *cobra.Command {
 		Args:                  cobra.NoArgs,
 		TraverseChildren:      true,
 		DisableFlagsInUseLine: true,
+		DisableAutoGenTag:     true,
 		RunE:                  cli.wrap(runCategory),
 	}
 	cmd.AddCommand(

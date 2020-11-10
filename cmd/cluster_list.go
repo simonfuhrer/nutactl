@@ -27,6 +27,7 @@ func newClusterListCommand(cli *CLI) *cobra.Command {
 		Short:                 "List clusters",
 		TraverseChildren:      true,
 		DisableFlagsInUseLine: true,
+		DisableAutoGenTag:     true,
 		PreRunE:               cli.ensureContext,
 		RunE:                  cli.wrap(runClusterList),
 	}

@@ -1,15 +1,16 @@
-## nutactl category delete
+## nutactl host list
 
-Delete a Category
+List hosts
 
 ```
-nutactl category delete [FLAGS] CATEGORY
+nutactl host list [FLAGS]
 ```
 
 ### Options
 
 ```
-  -h, --help   help for delete
+  -h, --help            help for list
+  -o, --output string   json|yaml|table (default "table")
 ```
 
 ### Options inherited from parent commands
@@ -23,5 +24,5 @@ nutactl category delete [FLAGS] CATEGORY
 
 ### SEE ALSO
 
-* [nutactl category](nutactl_category.md)	 - Manage categories
+* [nutactl host](nutactl_host.md)	 - Manage hosts
 

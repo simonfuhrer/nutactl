@@ -26,6 +26,7 @@ func newContextActiveCommand(cli *CLI) *cobra.Command {
 		Short:                 "Show active context",
 		TraverseChildren:      true,
 		DisableFlagsInUseLine: true,
+		DisableAutoGenTag:     true,
 		RunE:                  cli.wrap(runContextActive),
 	}
 	return cmd

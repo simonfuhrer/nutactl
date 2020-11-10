@@ -27,6 +27,7 @@ func newProjectListCommand(cli *CLI) *cobra.Command {
 		Short:                 "List projects",
 		TraverseChildren:      true,
 		DisableFlagsInUseLine: true,
+		DisableAutoGenTag:     true,
 		PreRunE:               cli.ensureContext,
 		RunE:                  cli.wrap(runProjectList),
 	}

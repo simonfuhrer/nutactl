@@ -29,6 +29,7 @@ func newHostListCommand(cli *CLI) *cobra.Command {
 		Short:                 "List hosts",
 		TraverseChildren:      true,
 		DisableFlagsInUseLine: true,
+		DisableAutoGenTag:     true,
 		PreRunE:               cli.ensureContext,
 		RunE:                  cli.wrap(runHostList),
 	}

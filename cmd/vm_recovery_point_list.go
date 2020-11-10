@@ -29,6 +29,7 @@ func newVMRecoveryPointListCommand(cli *CLI) *cobra.Command {
 		Short:                 "List VMs RecoveryPoints",
 		TraverseChildren:      true,
 		DisableFlagsInUseLine: true,
+		DisableAutoGenTag:     true,
 		PreRunE:               cli.ensureContext,
 		RunE:                  cli.wrap(runVMRecoveryPointList),
 	}
