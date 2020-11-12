@@ -118,11 +118,12 @@ func changeVMPowerState(cli *CLI, powerState v2.PowerState, args []string) error
 	if vm == nil {
 		return fmt.Errorf("vm not found: %s", idOrName)
 	}
-	task, err := cli.Client().VM.SetPowerState(cli.Context, powerState, vm)
-	if err != nil {
-		return err
+	if vm.Spec.Resources.PowerState == string(powerState) {
+		return fmt.Errorf("VM already powered %s", string(powerState))
 	}
-	err = cli.WaitTask(cli.Context, task.TaskUUID, 180)
+
+	vm.Spec.Resources.PowerState = string(powerState)
+	_, err = cli.Client().VM.Update(cli.Context, vm)
 	if err != nil {
 		return err
 	}
