@@ -15,8 +15,11 @@
 package displayers
 
 import (
+	"fmt"
 	"io"
+	"sort"
 	"strconv"
+	"strings"
 
 	"github.com/tecbiz-ch/nutanix-go-sdk/schema"
 )
@@ -51,8 +54,10 @@ func (o Clusters) header() []string {
 		"nos_version",
 		"ncc_version",
 		"OperationMode",
+		"Inefficient VMs",
 		"ExternalIP",
 		"Nodes",
+		"Categories",
 	}
 }
 
@@ -64,17 +69,32 @@ func (o Clusters) TableData(w io.Writer) error {
 		}
 		var hosts = 0
 		if cluster.Status.Resources.Nodes != nil {
-			hosts = len(cluster.Status.Resources.Nodes.HypervisorServerList)
+			for _, host := range cluster.Status.Resources.Nodes.HypervisorServerList {
+				if host.IP != "127.0.0.1" {
+					hosts++
+				}
+			}
 
 		}
+		categories := []string{}
+		if cluster.Metadata.Categories != nil {
+			for key, value := range cluster.Metadata.Categories {
+				categories = append(categories, fmt.Sprintf("%s: %s", key, value))
+
+			}
+
+		}
+		sort.Strings(categories)
 		data[i] = []string{
 			cluster.Metadata.UUID,
 			cluster.Spec.Name,
 			cluster.Spec.Resources.Config.SoftwareMap["NOS"].Version,
 			cluster.Spec.Resources.Config.SoftwareMap["NCC"].Version,
 			cluster.Spec.Resources.Config.OperationMode,
+			*cluster.Status.Resources.Analysis.VMEfficiencyMap.InefficientVMNum,
 			cluster.Spec.Resources.Network.ExternalIP,
 			strconv.Itoa(hosts),
+			strings.Join(categories, ", "),
 		}
 	}
 	return DisplayTable(w, data, o.header())
