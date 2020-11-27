@@ -51,12 +51,12 @@ func (o Clusters) header() []string {
 	return []string{
 		"UUID",
 		"Name",
-		"nos_version",
-		"ncc_version",
-		"OperationMode",
+		"AOS Version",
+		"Operation Mode",
+		"Hypervisor",
+		"Hosts",
 		"Inefficient VMs",
 		"ExternalIP",
-		"Nodes",
 		"Categories",
 	}
 }
@@ -68,10 +68,13 @@ func (o Clusters) TableData(w io.Writer) error {
 			continue
 		}
 		var hosts = 0
+		hypervisor := ""
 		if cluster.Status.Resources.Nodes != nil {
+			hypervisor = cluster.Status.Resources.Nodes.HypervisorServerList[0].Type
 			for _, host := range cluster.Status.Resources.Nodes.HypervisorServerList {
 				if host.IP != "127.0.0.1" {
 					hosts++
+
 				}
 			}
 
@@ -89,11 +92,11 @@ func (o Clusters) TableData(w io.Writer) error {
 			cluster.Metadata.UUID,
 			cluster.Spec.Name,
 			cluster.Spec.Resources.Config.SoftwareMap["NOS"].Version,
-			cluster.Spec.Resources.Config.SoftwareMap["NCC"].Version,
 			cluster.Spec.Resources.Config.OperationMode,
+			hypervisor,
+			strconv.Itoa(hosts),
 			*cluster.Status.Resources.Analysis.VMEfficiencyMap.InefficientVMNum,
 			cluster.Spec.Resources.Network.ExternalIP,
-			strconv.Itoa(hosts),
 			strings.Join(categories, ", "),
 		}
 	}
