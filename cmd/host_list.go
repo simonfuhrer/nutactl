@@ -15,8 +15,6 @@
 package cmd
 
 import (
-	"context"
-
 	"github.com/simonfuhrer/nutactl/cmd/displayers"
 	"github.com/spf13/cobra"
 	"github.com/tecbiz-ch/nutanix-go-sdk/pkg/utils"
@@ -63,7 +61,7 @@ func runHostList(cli *CLI, cmd *cobra.Command, args []string) error {
 		list.Entities = append(list.Entities, item.Entities...)
 	}
 
-	clusters, err := cli.client.Cluster.All(context.Background())
+	clusters, err := cli.client.Cluster.All(cli.Context)
 	if err != nil {
 		return err
 	}

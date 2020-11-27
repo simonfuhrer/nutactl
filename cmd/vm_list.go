@@ -85,5 +85,20 @@ func runVMList(cli *CLI, cmd *cobra.Command, args []string) error {
 		list.Entities = append(list.Entities, item.Entities...)
 	}
 
+	hosts, err := cli.Client().Host.All(cli.Context)
+	if err != nil {
+		return err
+	}
+
+	m := make(map[string]string)
+	for _, h := range hosts.Entities {
+		m[h.Metadata.UUID] = h.Spec.Name
+	}
+	for _, vm := range list.Entities {
+		if vm.Status.Resources.HostReference != nil {
+			vm.Status.Resources.HostReference.Name = m[vm.Status.Resources.HostReference.UUID]
+		}
+	}
+
 	return outputResponse(displayers.VMs{VMListIntent: list})
 }
