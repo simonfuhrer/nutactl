@@ -64,7 +64,7 @@ func (o Clusters) header() []string {
 func (o Clusters) TableData(w io.Writer) error {
 	data := make([][]string, len(o.Entities))
 	for i, cluster := range o.Entities {
-		if cluster.Spec.Name == "Unnamed" {
+		if cluster.Spec.Name == "Unnamed" || strings.Compare(*cluster.Status.Resources.Config.Build.Version, "pc") == 0 {
 			continue
 		}
 		var hosts = 0
