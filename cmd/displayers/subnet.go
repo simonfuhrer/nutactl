@@ -67,6 +67,15 @@ func (o Subnets) TableData(w io.Writer) error {
 	for i, subnet := range o.Entities {
 		subnetIP := ""
 		dhcpPool := ""
+		vlanId := ""
+		if subnet.Spec.Resources.VlanID != nil {
+			vlanId = strconv.FormatInt(*subnet.Spec.Resources.VlanID, 10)
+
+		}
+		clusterName := ""
+		if subnet.Spec.ClusterReference != nil {
+			clusterName = subnet.Spec.ClusterReference.Name
+		}
 		gw := ""
 		if subnet.Spec.Resources.IPConfig != nil {
 			subnetIP = fmt.Sprintf("%s/%d", subnet.Spec.Resources.IPConfig.SubnetIP, subnet.Spec.Resources.IPConfig.PrefixLength)
@@ -83,8 +92,8 @@ func (o Subnets) TableData(w io.Writer) error {
 		data[i] = []string{
 			subnet.Metadata.UUID,
 			subnet.Spec.Name,
-			subnet.Spec.ClusterReference.Name,
-			strconv.FormatInt(*subnet.Spec.Resources.VlanID, 10),
+			clusterName,
+			vlanId,
 			subnetIP,
 			gw,
 			dhcpPool,
