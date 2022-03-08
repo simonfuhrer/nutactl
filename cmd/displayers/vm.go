@@ -56,7 +56,7 @@ func (o VMs) header() []string {
 		"Subnet",
 		"IP",
 		"Cluster",
-		"Host",
+		//"Host",
 		"MiB",
 		"CPU",
 		"Disks",
@@ -79,10 +79,13 @@ func (o VMs) TableData(w io.Writer) error {
 		if vm.Metadata.ProjectReference != nil {
 			state = vm.Metadata.ProjectReference.Name
 		}
-		host := ""
-		if vm.Status.Resources.HostReference != nil {
-			host = vm.Status.Resources.HostReference.Name
-		}
+		/*
+			host := ""
+			if vm.Status.Resources.HostReference != nil {
+				host = vm.Status.Resources.HostReference.Name
+			}
+		*/
+
 		data[i] = []string{
 			vm.Metadata.UUID,
 			vm.Spec.Name,
@@ -91,7 +94,7 @@ func (o VMs) TableData(w io.Writer) error {
 			subnet,
 			ip,
 			vm.Spec.ClusterReference.Name,
-			host,
+			//			host,
 			strconv.FormatInt(vm.Spec.Resources.MemorySizeMib, 10),
 			fmt.Sprintf("%d/%d", vm.Spec.Resources.NumSockets, vm.Spec.Resources.NumVcpusPerSocket),
 			fmt.Sprintf("%d", len(vm.Spec.Resources.DiskList)),
