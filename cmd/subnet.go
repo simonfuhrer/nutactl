@@ -127,4 +127,6 @@ func addSubnetFlags(flags *pflag.FlagSet) {
 	flags.String("domain", "", "Default Domainname")
 	flags.StringSlice("dns-servers", nil, "Default DNS Servers seperated with a comma")
 	flags.StringSlice("ip-pool", nil, "Start address to end address seperated with a comma")
+	flags.String("type", "VLAN", "VLAN or OVERLAY")
+	flags.String("vpc", "", "VPC Name or UUID")
 }

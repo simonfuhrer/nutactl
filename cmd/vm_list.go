@@ -39,7 +39,7 @@ func newVMListCommand(cli *CLI) *cobra.Command {
 	}
 	addOutputFormatFlags(cmd.Flags(), "table")
 	flags := cmd.Flags()
-	flags.StringP("filter", "f", "", "FIQL filter (e.g. vm_name==srv.*)")
+	flags.StringP("filter", "f", "", "FIQL filter (e.g. vm_name==srv.*, ip_addresses==192.168.10.59, power_state==off)")
 	flags.StringP("cluster", "c", "", "filter vms by cluster")
 	return cmd
 }
@@ -85,20 +85,22 @@ func runVMList(cli *CLI, cmd *cobra.Command, args []string) error {
 		list.Entities = append(list.Entities, item.Entities...)
 	}
 
-	hosts, err := cli.Client().Host.All(cli.Context)
-	if err != nil {
-		return err
-	}
-
-	m := make(map[string]string)
-	for _, h := range hosts.Entities {
-		m[h.Metadata.UUID] = h.Spec.Name
-	}
-	for _, vm := range list.Entities {
-		if vm.Status.Resources.HostReference != nil {
-			vm.Status.Resources.HostReference.Name = m[vm.Status.Resources.HostReference.UUID]
+	/*
+		hosts, err := cli.Client().Host.All(cli.Context)
+		if err != nil {
+			return err
 		}
-	}
+
+			m := make(map[string]string)
+			for _, h := range hosts.Entities {
+				m[h.Metadata.UUID] = h.Spec.Name
+			}
+			for _, vm := range list.Entities {
+				if vm.Status.Resources.HostReference != nil {
+					vm.Status.Resources.HostReference.Name = m[vm.Status.Resources.HostReference.UUID]
+				}
+			}
+	*/
 
 	return outputResponse(displayers.VMs{VMListIntent: list})
 }

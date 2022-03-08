@@ -51,7 +51,7 @@ func (o Subnets) header() []string {
 	return []string{
 		"UUID",
 		"Name",
-		"Cluster",
+		"Cluster/VPC",
 		"VLAN",
 		"Subnet",
 		"Gateway",
@@ -72,9 +72,11 @@ func (o Subnets) TableData(w io.Writer) error {
 			vlanId = strconv.FormatInt(*subnet.Spec.Resources.VlanID, 10)
 
 		}
-		clusterName := ""
+		clusterOrVpc := ""
 		if subnet.Spec.ClusterReference != nil {
-			clusterName = subnet.Spec.ClusterReference.Name
+			clusterOrVpc = subnet.Spec.ClusterReference.Name
+		} else {
+			clusterOrVpc = subnet.Spec.Resources.VPCReference.Name
 		}
 		gw := ""
 		if subnet.Spec.Resources.IPConfig != nil {
@@ -92,7 +94,7 @@ func (o Subnets) TableData(w io.Writer) error {
 		data[i] = []string{
 			subnet.Metadata.UUID,
 			subnet.Spec.Name,
-			clusterName,
+			clusterOrVpc,
 			vlanId,
 			subnetIP,
 			gw,

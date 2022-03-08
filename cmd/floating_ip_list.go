@@ -15,68 +15,53 @@
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/simonfuhrer/nutactl/cmd/displayers"
-
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/tecbiz-ch/nutanix-go-sdk/pkg/utils"
 	"github.com/tecbiz-ch/nutanix-go-sdk/schema"
 )
 
-func newSubnetListCommand(cli *CLI) *cobra.Command {
+func newFloatingIpListCommand(cli *CLI) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:                   "list [FLAGS]",
-		Short:                 "List subnets",
+		Short:                 "List Floating IPs",
 		TraverseChildren:      true,
 		DisableFlagsInUseLine: true,
 		DisableAutoGenTag:     true,
 		PreRunE:               cli.ensureContext,
-		RunE:                  cli.wrap(runSubnetList),
+		RunE:                  cli.wrap(runFloatingIpList),
 	}
 	flags := cmd.Flags()
-	flags.StringP("filter", "f", "", "FIQL filter  (e.g. vlan_id==2711;cluster_name==mycluster, is_external==true, subnet_type==OVERLAY)")
-	flags.BoolP("overlay", "s", false, "show internal overlay subnets")
-	flags.BoolP("external", "e", false, "show external subnets")
+	flags.StringP("filter", "f", "", "FIQL filter  (e.g.)")
+
 	addOutputFormatFlags(flags, "table")
+
 	return cmd
 }
 
-func runSubnetList(cli *CLI, cmd *cobra.Command, args []string) error {
+func runFloatingIpList(cli *CLI, cmd *cobra.Command, args []string) error {
 	filter := viper.GetString("filter")
-	overlay := viper.GetBool("overlay")
-	external := viper.GetBool("external")
 
 	opts := &schema.DSMetadata{Offset: utils.Int64Ptr(0), Length: utils.Int64Ptr(itemsPerPage)}
-	var list schema.SubnetListIntent
-
-	if overlay && external {
-		return fmt.Errorf("both flags overlay and external provided")
-	}
-
-	if overlay {
-		opts.Filter = "subnet_type==OVERLAY"
-	}
-
-	if external {
-		opts.Filter = "is_external==true"
-	}
+	var list schema.FloatingIPListIntent
 
 	if filter != "" {
-		if len(opts.Filter) > 0 {
-			opts.Filter = fmt.Sprintf("%s;%s", filter, opts.Filter)
-		} else {
-			opts.Filter = filter
-
-		}
+		opts.Filter = filter
 	}
 
 	f := func(opts *schema.DSMetadata) (interface{}, error) {
-		list, err := cli.Client().Subnet.List(
+		list, err := cli.Client().FlotatingIP.List(
 			cli.Context,
 			opts,
 		)
+		for _, v := range list.Entities {
+			s, err := cli.Client().Subnet.GetByUUID(cli.Context, v.Status.Resources.ExternalSubnetReference.UUID)
+			if err != nil {
+				return list, err
+			}
+			v.Status.Resources.ExternalSubnetReference.Name = s.Spec.Name
+		}
 		return list, err
 	}
 	responses, err := paginateResp(f, opts)
@@ -84,24 +69,10 @@ func runSubnetList(cli *CLI, cmd *cobra.Command, args []string) error {
 		return err
 	}
 	for _, response := range responses {
-		item := response.(*schema.SubnetListIntent)
+		item := response.(*schema.FloatingIPListIntent)
 		list.Entities = append(list.Entities, item.Entities...)
+
 	}
 
-	m := make(map[string]string)
-
-	for _, v := range list.Entities {
-		if v.Spec.Resources.VPCReference != nil {
-			if _, ok := m[v.Spec.Resources.VPCReference.UUID]; !ok {
-				vpc, err := cli.Client().VPC.Get(cli.Context, v.Spec.Resources.VPCReference.UUID)
-				if err != nil {
-					break
-				}
-				m[vpc.Metadata.UUID] = vpc.Spec.Name
-			}
-			v.Spec.Resources.VPCReference.Name = m[v.Spec.Resources.VPCReference.UUID]
-		}
-	}
-
-	return outputResponse(displayers.Subnets{SubnetListIntent: list})
+	return outputResponse(displayers.FloatingIps{FloatingIPListIntent: list})
 }

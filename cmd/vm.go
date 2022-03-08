@@ -143,10 +143,11 @@ func createUpdateVMHelper(name string, req *schema.VMIntent, cli *CLI) error {
 			subnet = subnets.Entities[0]
 		}
 
-		if strings.Compare(subnet.Spec.ClusterReference.UUID, req.Spec.ClusterReference.UUID) > 0 {
-			return fmt.Errorf("subnet not available on provided cluster %s", req.Spec.ClusterReference.UUID)
+		if subnet.Status.Resources.SubnetType == "VLAN" {
+			if strings.Compare(subnet.Spec.ClusterReference.UUID, req.Spec.ClusterReference.UUID) > 0 {
+				return fmt.Errorf("subnet not available on provided cluster %s", req.Spec.ClusterReference.UUID)
+			}
 		}
-
 		if len(req.Spec.Resources.NicList) == 0 {
 			req.Spec.Resources.NicList = []*schema.VMNic{
 				{

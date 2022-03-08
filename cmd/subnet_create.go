@@ -36,7 +36,7 @@ func newSubnetCreateCommand(cli *CLI) *cobra.Command {
 	}
 	flags := cmd.Flags()
 	flags.String("cluster", "", "Cluster (UUID or name)")
-	MarkFlagsRequired(cmd, "cluster")
+	//MarkFlagsRequired(cmd, "cluster")
 	addSubnetFlags(flags)
 
 	return cmd
@@ -45,24 +45,23 @@ func newSubnetCreateCommand(cli *CLI) *cobra.Command {
 func runSubnetCreate(cli *CLI, cmd *cobra.Command, args []string) error {
 	name := args[0]
 	clusterIdorName := viper.GetString("cluster")
+	vpcIdorName := viper.GetString("vpc")
+	subnetType := viper.GetString("type")
+	var cluster *schema.ClusterIntent
+	if subnetType != "VLAN" && subnetType != "OVERLAY" {
+		return fmt.Errorf("type should be VLAN or OVERLAY not %s", subnetType)
+
+	}
 
 	subnet, _ := cli.Client().Subnet.Get(cli.Context, name)
 	if subnet != nil {
 		return fmt.Errorf("subnet %s already exists with uuid %s", name, subnet.Metadata.UUID)
 	}
-	cluster, err := cli.Client().Cluster.Get(cli.Context, clusterIdorName)
-	if err != nil {
-		return fmt.Errorf("cluster not found %s", clusterIdorName)
-	}
 
 	req := &schema.SubnetIntent{
 		Spec: &schema.Subnet{
 			Resources: &schema.SubnetResources{
-				SubnetType: "VLAN",
-			},
-			ClusterReference: &schema.Reference{
-				Kind: "cluster",
-				UUID: cluster.Metadata.UUID,
+				SubnetType: subnetType,
 			},
 		},
 		Metadata: &schema.Metadata{
@@ -70,7 +69,33 @@ func runSubnetCreate(cli *CLI, cmd *cobra.Command, args []string) error {
 		},
 	}
 
-	err = createUpdateSubnetHelper(name, req)
+	if subnetType == "VLAN" {
+		var err error
+		cluster, err = cli.Client().Cluster.Get(cli.Context, clusterIdorName)
+		if err != nil {
+			return fmt.Errorf("cluster not found %s", clusterIdorName)
+		}
+		req.Spec.ClusterReference = &schema.Reference{
+			Kind: "cluster",
+			UUID: cluster.Metadata.UUID,
+		}
+	}
+
+	if subnetType == "OVERLAY" {
+		if len(vpcIdorName) == 0 {
+			return fmt.Errorf("vpc id or name is required")
+		}
+		vpc, err := cli.Client().VPC.Get(cli.Context, vpcIdorName)
+		if err != nil {
+			return fmt.Errorf("vpc not found %s", vpcIdorName)
+		}
+		req.Spec.Resources.VPCReference = &schema.Reference{
+			Kind: "vpc",
+			UUID: vpc.Metadata.UUID,
+		}
+	}
+
+	err := createUpdateSubnetHelper(name, req)
 	if err != nil {
 		return err
 	}
