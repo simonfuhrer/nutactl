@@ -1,18 +1,15 @@
-## nutactl vm list
+## nutactl vpc delete
 
-List all VM
+Delete a VPC
 
 ```
-nutactl vm list [FLAGS]
+nutactl vpc delete [FLAGS] VPC
 ```
 
 ### Options
 
 ```
-  -c, --cluster string   filter vms by cluster
-  -f, --filter string    FIQL filter (e.g. vm_name==srv.*, ip_addresses==192.168.10.59, power_state==off)
-  -h, --help             help for list
-  -o, --output string    json|yaml|table (default "table")
+  -h, --help   help for delete
 ```
 
 ### Options inherited from parent commands
@@ -26,5 +23,5 @@ nutactl vm list [FLAGS]
 
 ### SEE ALSO
 
-* [nutactl vm](nutactl_vm.md)	 - Manage vms
+* [nutactl vpc](nutactl_vpc.md)	 - Manage vpcs
 

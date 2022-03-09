@@ -17,7 +17,9 @@ nutactl subnet create [FLAGS] subnetname
   -h, --help                  help for create
       --ip-pool strings       Start address to end address seperated with a comma
       --ip-range string       Network CIDR
+      --type string           VLAN or OVERLAY (default "VLAN")
       --vlan-id int           VlanID
+      --vpc string            VPC Name or UUID
 ```
 
 ### Options inherited from parent commands

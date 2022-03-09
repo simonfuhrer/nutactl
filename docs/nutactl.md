@@ -23,11 +23,14 @@ A command-line interface for nutanix prism central
 * [nutactl cluster](nutactl_cluster.md)	 - Manage cluster
 * [nutactl completion](nutactl_completion.md)	 - Generates bash completion scripts
 * [nutactl context](nutactl_context.md)	 - Manage contexts
+* [nutactl floatingip](nutactl_floatingip.md)	 - Manage vpcs
 * [nutactl host](nutactl_host.md)	 - Manage hosts
 * [nutactl image](nutactl_image.md)	 - Manage images
 * [nutactl project](nutactl_project.md)	 - Manage projects
+* [nutactl routing-policy](nutactl_routing-policy.md)	 - Manage routing policies
 * [nutactl subnet](nutactl_subnet.md)	 - Manage subnets
 * [nutactl task](nutactl_task.md)	 - Manage tasks
 * [nutactl version](nutactl_version.md)	 - Print version information
 * [nutactl vm](nutactl_vm.md)	 - Manage vms
+* [nutactl vpc](nutactl_vpc.md)	 - Manage vpcs
 
