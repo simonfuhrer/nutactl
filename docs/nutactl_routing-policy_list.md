@@ -1,19 +1,17 @@
-## nutactl subnet list
+## nutactl routing-policy list
 
-List subnets
+List routing policies
 
 ```
-nutactl subnet list [FLAGS]
+nutactl routing-policy list [FLAGS]
 ```
 
 ### Options
 
 ```
-  -e, --external        show external subnets
-  -f, --filter string   FIQL filter  (e.g. vlan_id==2711;cluster_name==mycluster, is_external==true, subnet_type==OVERLAY)
+  -f, --filter string   FIQL filter  (e.g.)
   -h, --help            help for list
   -o, --output string   json|yaml|table (default "table")
-  -s, --overlay         show internal overlay subnets
 ```
 
 ### Options inherited from parent commands
@@ -27,5 +25,5 @@ nutactl subnet list [FLAGS]
 
 ### SEE ALSO
 
-* [nutactl subnet](nutactl_subnet.md)	 - Manage subnets
+* [nutactl routing-policy](nutactl_routing-policy.md)	 - Manage routing policies
 

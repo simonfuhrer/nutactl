@@ -1,18 +1,16 @@
-## nutactl vm list
+## nutactl vpc create
 
-List all VM
+Create a vpc
 
 ```
-nutactl vm list [FLAGS]
+nutactl vpc create [FLAGS] vpcname
 ```
 
 ### Options
 
 ```
-  -c, --cluster string   filter vms by cluster
-  -f, --filter string    FIQL filter (e.g. vm_name==srv.*, ip_addresses==192.168.10.59, power_state==off)
-  -h, --help             help for list
-  -o, --output string    json|yaml|table (default "table")
+  -e, --external-subnet string   external subnet uuid or name
+  -h, --help                     help for create
 ```
 
 ### Options inherited from parent commands
@@ -26,5 +24,5 @@ nutactl vm list [FLAGS]
 
 ### SEE ALSO
 
-* [nutactl vm](nutactl_vm.md)	 - Manage vms
+* [nutactl vpc](nutactl_vpc.md)	 - Manage vpcs
 

@@ -17,7 +17,9 @@ nutactl subnet update [FLAGS] SUBNET
       --ip-pool strings       Start address to end address seperated with a comma
       --ip-range string       Network CIDR
   -n, --name string           New project name
+      --type string           VLAN or OVERLAY (default "VLAN")
       --vlan-id int           VlanID
+      --vpc string            VPC Name or UUID
 ```
 
 ### Options inherited from parent commands
