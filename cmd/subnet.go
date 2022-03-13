@@ -76,16 +76,15 @@ func createUpdateSubnetHelper(name string, req *schema.SubnetIntent) error {
 		req.Spec.Resources.VlanID = &vlanID
 	}
 
-	if len(name) != 0 {
+	if len(name) > 0 {
 		req.Spec.Name = name
-
 	}
 
-	if len(description) != 0 {
+	if len(description) > 0 {
 		req.Spec.Description = description
 	}
 
-	if len(networkCIDR) != 0 {
+	if len(networkCIDR) > 0 {
 		cidr, network, err := net.ParseCIDR(networkCIDR)
 		if err != nil {
 			return err
@@ -95,10 +94,13 @@ func createUpdateSubnetHelper(name string, req *schema.SubnetIntent) error {
 		req.Spec.Resources.IPConfig.PrefixLength = int64(prefixSize)
 
 	}
-	if len(gateway) != 0 {
+	if len(gateway) > 0 {
 		req.Spec.Resources.IPConfig.DefaultGatewayIP = gateway
 	}
-	if len(domain) != 0 {
+	if len(domain) > 0 {
+		if req.Spec.Resources.IPConfig.DHCPOptions == nil {
+			req.Spec.Resources.IPConfig.DHCPOptions = &schema.DHCPOptions{}
+		}
 		req.Spec.Resources.IPConfig.DHCPOptions.DomainName = domain
 		req.Spec.Resources.IPConfig.DHCPOptions.DomainSearchList = []string{domain}
 	}

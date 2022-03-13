@@ -43,7 +43,6 @@ func newFloatingIpCreateCommand(cli *CLI) *cobra.Command {
 func runFloatingIpCreate(cli *CLI, cmd *cobra.Command, args []string) error {
 	idOrName := args[0]
 	vmNameOrId := viper.GetString("vm")
-
 	subnet, err := cli.Client().Subnet.Get(cli.Context, idOrName)
 	if err != nil {
 		return err

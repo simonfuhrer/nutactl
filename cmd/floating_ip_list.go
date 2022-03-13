@@ -55,13 +55,6 @@ func runFloatingIpList(cli *CLI, cmd *cobra.Command, args []string) error {
 			cli.Context,
 			opts,
 		)
-		for _, v := range list.Entities {
-			s, err := cli.Client().Subnet.GetByUUID(cli.Context, v.Status.Resources.ExternalSubnetReference.UUID)
-			if err != nil {
-				return list, err
-			}
-			v.Status.Resources.ExternalSubnetReference.Name = s.Spec.Name
-		}
 		return list, err
 	}
 	responses, err := paginateResp(f, opts)
@@ -72,6 +65,19 @@ func runFloatingIpList(cli *CLI, cmd *cobra.Command, args []string) error {
 		item := response.(*schema.FloatingIPListIntent)
 		list.Entities = append(list.Entities, item.Entities...)
 
+	}
+
+	cache := make(map[string]string)
+	for _, f := range list.Entities {
+		_, ok := cache[f.Status.Resources.ExternalSubnetReference.UUID]
+		if !ok {
+			subnet, err := cli.Client().Subnet.GetByUUID(cli.Context, f.Status.Resources.ExternalSubnetReference.UUID)
+			if err != nil {
+				return err
+			}
+			cache[f.Status.Resources.ExternalSubnetReference.UUID] = subnet.Spec.Name
+		}
+		f.Status.Resources.ExternalSubnetReference.Name = cache[f.Status.Resources.ExternalSubnetReference.UUID]
 	}
 
 	return outputResponse(displayers.FloatingIps{FloatingIPListIntent: list})
