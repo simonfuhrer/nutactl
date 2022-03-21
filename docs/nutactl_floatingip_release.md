@@ -23,5 +23,5 @@ nutactl floatingip release [FLAGS] FLOATINGIP
 
 ### SEE ALSO
 
-* [nutactl floatingip](nutactl_floatingip.md)	 - Manage vpcs
+* [nutactl floatingip](nutactl_floatingip.md)	 - Manage floatingips
 

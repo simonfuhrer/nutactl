@@ -1,6 +1,6 @@
 ## nutactl floatingip
 
-Manage vpcs
+Manage floatingips
 
 ```
 nutactl floatingip

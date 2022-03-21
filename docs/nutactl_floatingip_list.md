@@ -25,5 +25,5 @@ nutactl floatingip list [FLAGS]
 
 ### SEE ALSO
 
-* [nutactl floatingip](nutactl_floatingip.md)	 - Manage vpcs
+* [nutactl floatingip](nutactl_floatingip.md)	 - Manage floatingips
 
