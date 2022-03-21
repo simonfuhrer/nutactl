@@ -24,8 +24,8 @@ import (
 func newFloatingIpCommand(cli *CLI) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:                   "floatingip",
-		Short:                 "Manage vpcs",
-		Aliases:               []string{"floating", "fip", ""},
+		Short:                 "Manage floatingips",
+		Aliases:               []string{"floating", "fip"},
 		Args:                  cobra.NoArgs,
 		TraverseChildren:      true,
 		DisableFlagsInUseLine: true,
