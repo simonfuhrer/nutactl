@@ -17,7 +17,6 @@ package displayers
 import (
 	"io"
 
-	"github.com/dustin/go-humanize"
 	"github.com/tecbiz-ch/nutanix-go-sdk/schema"
 )
 
@@ -67,8 +66,8 @@ func (o FloatingIps) TableData(w io.Writer) error {
 			fip.Status.Resources.FloatingIP,
 			fip.Status.Resources.ExternalSubnetReference.Name,
 			vm,
-			humanize.Time(*fip.Metadata.LastUpdateTime),
-			humanize.Time(*fip.Metadata.CreationTime),
+			RenderTime(fip.Metadata.LastUpdateTime),
+			RenderTime(fip.Metadata.CreationTime),
 		}
 	}
 	return DisplayTable(w, data, o.header())
