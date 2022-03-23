@@ -20,7 +20,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/dustin/go-humanize"
 	"github.com/tecbiz-ch/nutanix-go-sdk/schema"
 )
 
@@ -100,8 +99,8 @@ func (o Subnets) TableData(w io.Writer) error {
 			gw,
 			dhcpPool,
 			subnet.Status.State,
-			humanize.Time(*subnet.Metadata.LastUpdateTime),
-			humanize.Time(*subnet.Metadata.CreationTime),
+			RenderTime(subnet.Metadata.LastUpdateTime),
+			RenderTime(subnet.Metadata.CreationTime),
 		}
 	}
 	return DisplayTable(w, data, o.header())

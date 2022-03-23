@@ -79,8 +79,8 @@ func (o Hosts) TableData(w io.Writer) error {
 			humanize.Bytes(host.Status.Resources.MemoryCapacityMib * humanize.MByte),
 			strconv.Itoa(host.Status.Resources.Hypervisor.NumVMs),
 			host.Status.ClusterReference.Name,
-			humanize.Time(*host.Metadata.LastUpdateTime),
-			humanize.Time(*host.Metadata.CreationTime),
+			RenderTime(host.Metadata.LastUpdateTime),
+			RenderTime(host.Metadata.CreationTime),
 		}
 	}
 	return DisplayTable(w, data, o.header())

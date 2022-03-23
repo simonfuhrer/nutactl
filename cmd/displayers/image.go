@@ -18,7 +18,6 @@ import (
 	"io"
 	"strconv"
 
-	"github.com/dustin/go-humanize"
 	"github.com/tecbiz-ch/nutanix-go-sdk/schema"
 )
 
@@ -73,8 +72,8 @@ func (o Images) TableData(w io.Writer) error {
 			image.Spec.Resources.ImageType,
 			size,
 			image.Status.State,
-			humanize.Time(*image.Metadata.LastUpdateTime),
-			humanize.Time(*image.Metadata.CreationTime),
+			RenderTime(image.Metadata.LastUpdateTime),
+			RenderTime(image.Metadata.CreationTime),
 		}
 	}
 	return DisplayTable(w, data, o.header())

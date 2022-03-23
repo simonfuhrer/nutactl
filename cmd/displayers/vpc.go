@@ -18,7 +18,6 @@ import (
 	"io"
 	"strings"
 
-	"github.com/dustin/go-humanize"
 	"github.com/tecbiz-ch/nutanix-go-sdk/schema"
 )
 
@@ -72,8 +71,8 @@ func (o Vpcs) TableData(w io.Writer) error {
 			vpc.Spec.Name,
 			strings.Join(ip, ","),
 			strings.Join(subnet, ","),
-			humanize.Time(*vpc.Metadata.LastUpdateTime),
-			humanize.Time(*vpc.Metadata.CreationTime),
+			RenderTime(vpc.Metadata.LastUpdateTime),
+			RenderTime(vpc.Metadata.CreationTime),
 			vpc.Status.State,
 		}
 	}

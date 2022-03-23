@@ -19,7 +19,6 @@ import (
 	"io"
 	"strings"
 
-	"github.com/dustin/go-humanize"
 	"github.com/tecbiz-ch/nutanix-go-sdk/schema"
 )
 
@@ -122,8 +121,8 @@ func (o RoutingPolicies) TableData(w io.Writer) error {
 			fmt.Sprintf("%v", r.Status.Resources.IsBidirectional),
 			target,
 			t,
-			humanize.Time(*r.Metadata.LastUpdateTime),
-			humanize.Time(*r.Metadata.CreationTime),
+			RenderTime(r.Metadata.LastUpdateTime),
+			RenderTime(r.Metadata.CreationTime),
 		}
 	}
 	return DisplayTable(w, data, o.header())

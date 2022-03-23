@@ -18,7 +18,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"time"
 
+	"github.com/dustin/go-humanize"
 	"github.com/k0kubun/pp"
 	"github.com/olekukonko/tablewriter"
 	"github.com/pkg/errors"
@@ -35,6 +37,13 @@ func JSONToYAML(j []byte) ([]byte, error) {
 	}
 
 	return yaml.Marshal(jsonObj)
+}
+
+func RenderTime(t *time.Time) string {
+	if t == nil {
+		return "TIME NULL"
+	}
+	return humanize.Time(*t)
 }
 
 func DisplayYAML(w io.Writer, data interface{}) error {

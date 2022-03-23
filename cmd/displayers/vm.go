@@ -19,7 +19,6 @@ import (
 	"io"
 	"strconv"
 
-	"github.com/dustin/go-humanize"
 	"github.com/tecbiz-ch/nutanix-go-sdk/pkg/utils"
 	"github.com/tecbiz-ch/nutanix-go-sdk/schema"
 )
@@ -99,8 +98,8 @@ func (o VMs) TableData(w io.Writer) error {
 			fmt.Sprintf("%d/%d", vm.Spec.Resources.NumSockets, vm.Spec.Resources.NumVcpusPerSocket),
 			fmt.Sprintf("%d", len(vm.Spec.Resources.DiskList)),
 			utils.StringValue(vm.Status.State),
-			humanize.Time(*vm.Metadata.LastUpdateTime),
-			humanize.Time(*vm.Metadata.CreationTime),
+			RenderTime(vm.Metadata.LastUpdateTime),
+			RenderTime(vm.Metadata.CreationTime),
 		}
 	}
 	return DisplayTable(w, data, o.header())
