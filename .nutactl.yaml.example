@@ -1,0 +1,10 @@
+active_context: test
+config: ""
+contexts:
+    - name: test
+      endpoint: https://prism.test.de:9440/
+      password: password
+      user: admin
+insecure: true
+log-json: false
+log-level: info
