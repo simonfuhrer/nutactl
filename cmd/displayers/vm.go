@@ -72,7 +72,9 @@ func (o VMs) TableData(w io.Writer) error {
 		ip := ""
 		if len(vm.Spec.Resources.NicList) > 0 {
 			subnet = vm.Spec.Resources.NicList[0].SubnetReference.Name
-			ip = vm.Status.Resources.NicList[0].IPEndpointList[0].IP
+			if len(vm.Status.Resources.NicList[0].IPEndpointList) > 0 {
+				ip = vm.Status.Resources.NicList[0].IPEndpointList[0].IP
+			}
 		}
 		state := ""
 		if vm.Metadata.ProjectReference != nil {
