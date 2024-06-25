@@ -22,7 +22,7 @@ import (
 
 func newVMRecoveryPointDeleteCommand(cli *CLI) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:                   "recoverypoint-delete [FLAGS] VM",
+		Use:                   "recoverypoint-delete [FLAGS] <recoverypointname or uuid>",
 		Short:                 "Delete a VM RecoveryPoint",
 		Args:                  cobra.ExactArgs(1),
 		TraverseChildren:      true,
